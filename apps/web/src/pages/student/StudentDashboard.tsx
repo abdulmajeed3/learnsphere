@@ -17,9 +17,24 @@ export function StudentDashboard() {
   if (isLoading) return <PageSpinner />;
 
   const stats = [
-    { label: 'Enrolled Courses', value: data?.totalEnrollments ?? 0, icon: BookOpen, color: 'text-blue-600 bg-blue-100' },
-    { label: 'Completed Courses', value: data?.completedCourses ?? 0, icon: Trophy, color: 'text-yellow-600 bg-yellow-100' },
-    { label: 'Lessons Completed', value: data?.totalCompletedLessons ?? 0, icon: CheckCircle, color: 'text-green-600 bg-green-100' },
+    {
+      label: 'Enrolled Courses',
+      value: data?.totalEnrollments ?? 0,
+      icon: BookOpen,
+      color: 'text-blue-600 bg-blue-100',
+    },
+    {
+      label: 'Completed Courses',
+      value: data?.completedCourses ?? 0,
+      icon: Trophy,
+      color: 'text-yellow-600 bg-yellow-100',
+    },
+    {
+      label: 'Lessons Completed',
+      value: data?.totalCompletedLessons ?? 0,
+      icon: CheckCircle,
+      color: 'text-green-600 bg-green-100',
+    },
   ];
 
   return (
@@ -49,7 +64,10 @@ export function StudentDashboard() {
         <div className="lg:col-span-2">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-gray-900">My Courses</h2>
-            <Link to="/courses" className="text-sm text-primary-600 hover:text-primary-700 flex items-center gap-1">
+            <Link
+              to="/courses"
+              className="text-sm text-primary-600 hover:text-primary-700 flex items-center gap-1"
+            >
               Browse more <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </div>
@@ -58,7 +76,11 @@ export function StudentDashboard() {
             <EmptyState
               title="No courses yet"
               description="Browse our catalog and enroll in your first course."
-              action={<Link to="/courses" className="btn-primary">Browse Courses</Link>}
+              action={
+                <Link to="/courses" className="btn-primary">
+                  Browse Courses
+                </Link>
+              }
             />
           ) : (
             <div className="space-y-3">
@@ -72,11 +94,15 @@ export function StudentDashboard() {
                     <BookOpen className="h-6 w-6 text-white" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-gray-900 group-hover:text-primary-700 truncate">{c.courseTitle}</p>
+                    <p className="font-medium text-gray-900 group-hover:text-primary-700 truncate">
+                      {c.courseTitle}
+                    </p>
                     <p className="text-xs text-gray-500">{c.instructor?.name}</p>
                     <div className="mt-2">
                       <ProgressBar value={c.progressPercentage} size="sm" />
-                      <p className="text-xs text-gray-400 mt-0.5">{c.completedLessons}/{c.totalLessons} lessons · {c.progressPercentage}%</p>
+                      <p className="text-xs text-gray-400 mt-0.5">
+                        {c.completedLessons}/{c.totalLessons} lessons · {c.progressPercentage}%
+                      </p>
                     </div>
                   </div>
                   <ArrowRight className="h-4 w-4 text-gray-400 shrink-0" />
@@ -90,9 +116,7 @@ export function StudentDashboard() {
         <div>
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Recent Quiz Attempts</h2>
           {!data?.recentQuizAttempts?.length ? (
-            <div className="card p-6 text-center text-sm text-gray-500">
-              No quiz attempts yet
-            </div>
+            <div className="card p-6 text-center text-sm text-gray-500">No quiz attempts yet</div>
           ) : (
             <div className="space-y-3">
               {data.recentQuizAttempts.map((a: any) => (
@@ -100,10 +124,14 @@ export function StudentDashboard() {
                   <p className="text-sm font-medium text-gray-900 truncate">{a.quizTitle}</p>
                   <p className="text-xs text-gray-500 mb-2">{a.courseTitle}</p>
                   <div className="flex items-center justify-between">
-                    <span className={`text-sm font-semibold ${a.percentage >= 70 ? 'text-green-600' : 'text-red-600'}`}>
+                    <span
+                      className={`text-sm font-semibold ${a.percentage >= 70 ? 'text-green-600' : 'text-red-600'}`}
+                    >
                       {a.percentage}%
                     </span>
-                    <span className="text-xs text-gray-400">{a.score}/{a.totalPoints}</span>
+                    <span className="text-xs text-gray-400">
+                      {a.score}/{a.totalPoints}
+                    </span>
                   </div>
                   <ProgressBar value={a.percentage} size="sm" className="mt-1" />
                 </div>

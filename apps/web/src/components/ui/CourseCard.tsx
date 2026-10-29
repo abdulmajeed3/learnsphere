@@ -27,14 +27,14 @@ export function CourseCard({ course, progress, href }: CourseCardProps) {
           <span className={`${difficultyColors[course.difficulty]} shrink-0`}>
             {course.difficulty.charAt(0) + course.difficulty.slice(1).toLowerCase()}
           </span>
-          {course.category && (
-            <span className="badge-blue truncate">{course.category.name}</span>
-          )}
+          {course.category && <span className="badge-blue truncate">{course.category.name}</span>}
         </div>
         <h3 className="mb-1 font-semibold text-gray-900 group-hover:text-primary-700 line-clamp-2 leading-snug">
           {course.title}
         </h3>
-        <p className="mb-3 text-xs text-gray-500 line-clamp-2">{course.shortDescription ?? course.description}</p>
+        <p className="mb-3 text-xs text-gray-500 line-clamp-2">
+          {course.shortDescription ?? course.description}
+        </p>
         <div className="flex items-center justify-between text-xs text-gray-500">
           <span className="flex items-center gap-1">
             <BookOpen className="h-3.5 w-3.5" />
@@ -51,7 +51,9 @@ export function CourseCard({ course, progress, href }: CourseCardProps) {
         {progress && (
           <div className="mt-3 border-t border-gray-100 pt-3">
             <div className="mb-1 flex justify-between text-xs text-gray-500">
-              <span>{progress.completedLessons}/{progress.totalLessons} lessons</span>
+              <span>
+                {progress.completedLessons}/{progress.totalLessons} lessons
+              </span>
               <span>{progress.progressPercentage}%</span>
             </div>
             <ProgressBar value={progress.progressPercentage} size="sm" />

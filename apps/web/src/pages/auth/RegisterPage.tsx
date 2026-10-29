@@ -21,10 +21,19 @@ export function RegisterPage() {
   const register_ = useRegister();
 
   if (isAuthenticated) {
-    return <Navigate to={user?.role === 'INSTRUCTOR' ? '/instructor/dashboard' : '/student/dashboard'} replace />;
+    return (
+      <Navigate
+        to={user?.role === 'INSTRUCTOR' ? '/instructor/dashboard' : '/student/dashboard'}
+        replace
+      />
+    );
   }
 
-  const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: { role: 'STUDENT' },
   });
@@ -32,7 +41,7 @@ export function RegisterPage() {
   const onSubmit = (data: FormData) => register_.mutate(data);
 
   const errorMsg = register_.error
-    ? (register_.error as any)?.response?.data?.message ?? 'Registration failed'
+    ? ((register_.error as any)?.response?.data?.message ?? 'Registration failed')
     : null;
 
   return (
@@ -66,31 +75,65 @@ export function RegisterPage() {
             </div>
 
             <div>
-              <label className="label" htmlFor="name">Full Name</label>
-              <input id="name" type="text" className="input" placeholder="John Doe" {...register('name')} />
+              <label className="label" htmlFor="name">
+                Full Name
+              </label>
+              <input
+                id="name"
+                type="text"
+                className="input"
+                placeholder="John Doe"
+                {...register('name')}
+              />
               {errors.name && <p className="mt-1 text-xs text-red-600">{errors.name.message}</p>}
             </div>
 
             <div>
-              <label className="label" htmlFor="email">Email</label>
-              <input id="email" type="email" autoComplete="email" className="input" placeholder="you@example.com" {...register('email')} />
+              <label className="label" htmlFor="email">
+                Email
+              </label>
+              <input
+                id="email"
+                type="email"
+                autoComplete="email"
+                className="input"
+                placeholder="you@example.com"
+                {...register('email')}
+              />
               {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email.message}</p>}
             </div>
 
             <div>
-              <label className="label" htmlFor="password">Password</label>
-              <input id="password" type="password" autoComplete="new-password" className="input" placeholder="Min. 8 characters" {...register('password')} />
-              {errors.password && <p className="mt-1 text-xs text-red-600">{errors.password.message}</p>}
+              <label className="label" htmlFor="password">
+                Password
+              </label>
+              <input
+                id="password"
+                type="password"
+                autoComplete="new-password"
+                className="input"
+                placeholder="Min. 8 characters"
+                {...register('password')}
+              />
+              {errors.password && (
+                <p className="mt-1 text-xs text-red-600">{errors.password.message}</p>
+              )}
             </div>
 
-            <button type="submit" disabled={register_.isPending} className="btn-primary w-full py-2.5 mt-2">
+            <button
+              type="submit"
+              disabled={register_.isPending}
+              className="btn-primary w-full py-2.5 mt-2"
+            >
               {register_.isPending ? <Spinner size="sm" /> : 'Create Account'}
             </button>
           </form>
 
           <div className="mt-4 border-t border-gray-100 pt-4 text-center text-sm text-gray-500">
             Already have an account?{' '}
-            <Link to="/login" className="font-medium text-primary-600 hover:text-primary-700">Sign in</Link>
+            <Link to="/login" className="font-medium text-primary-600 hover:text-primary-700">
+              Sign in
+            </Link>
           </div>
         </div>
       </div>

@@ -18,9 +18,13 @@ const quizSchema = z.object({
 
 const questionSchema = z.object({
   text: z.string().min(3, 'Question text required'),
-  options: z.array(z.object({ text: z.string().min(1, 'Option text required'), isCorrect: z.boolean() }))
+  options: z
+    .array(z.object({ text: z.string().min(1, 'Option text required'), isCorrect: z.boolean() }))
     .min(2, 'At least 2 options required')
-    .refine((opts) => opts.filter((o) => o.isCorrect).length === 1, 'Exactly one correct answer required'),
+    .refine(
+      (opts) => opts.filter((o) => o.isCorrect).length === 1,
+      'Exactly one correct answer required',
+    ),
 });
 
 type QuizFormData = z.infer<typeof quizSchema>;
@@ -34,7 +38,10 @@ export function QuizManagerPage() {
   const [addQuestionOpen, setAddQuestionOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const { data: course } = useQuery({ queryKey: ['course', courseId], queryFn: () => coursesApi.get(courseId!) });
+  const { data: course } = useQuery({
+    queryKey: ['course', courseId],
+    queryFn: () => coursesApi.get(courseId!),
+  });
   const { data: quizzes, isLoading } = useQuery({
     queryKey: ['quizzes', courseId],
     queryFn: () => quizzesApi.listByCourse(courseId!),
@@ -50,18 +57,28 @@ export function QuizManagerPage() {
 
   const createQuiz = useMutation({
     mutationFn: (data: QuizFormData) => quizzesApi.create(courseId!, data),
-    onSuccess: (q) => { invalidateQuizzes(); setCreateQuizOpen(false); setSelectedQuizId(q.id); },
+    onSuccess: (q) => {
+      invalidateQuizzes();
+      setCreateQuizOpen(false);
+      setSelectedQuizId(q.id);
+    },
     onError: (e: any) => setError(e?.response?.data?.message ?? 'Failed'),
   });
 
   const deleteQuiz = useMutation({
     mutationFn: (id: string) => quizzesApi.delete(id),
-    onSuccess: () => { invalidateQuizzes(); setSelectedQuizId(null); },
+    onSuccess: () => {
+      invalidateQuizzes();
+      setSelectedQuizId(null);
+    },
   });
 
   const addQuestion = useMutation({
     mutationFn: (data: QuestionFormData) => quizzesApi.addQuestion(selectedQuizId!, data),
-    onSuccess: () => { invalidateQuiz(); setAddQuestionOpen(false); },
+    onSuccess: () => {
+      invalidateQuiz();
+      setAddQuestionOpen(false);
+    },
     onError: (e: any) => setError(e?.response?.data?.message ?? 'Failed'),
   });
 
@@ -93,7 +110,9 @@ export function QuizManagerPage() {
       <div className="grid md:grid-cols-3 gap-6">
         {/* Quiz list */}
         <div>
-          <h2 className="text-sm font-semibold text-gray-700 mb-2">Quizzes ({quizzes?.length ?? 0})</h2>
+          <h2 className="text-sm font-semibold text-gray-700 mb-2">
+            Quizzes ({quizzes?.length ?? 0})
+          </h2>
           {!quizzes?.length ? (
             <div className="card p-4 text-center text-sm text-gray-500">No quizzes yet</div>
           ) : (
@@ -105,7 +124,9 @@ export function QuizManagerPage() {
                   className={`w-full text-left card p-3 transition-colors ${selectedQuizId === q.id ? 'border-primary-400 bg-primary-50' : 'hover:bg-gray-50'}`}
                 >
                   <p className="font-medium text-sm text-gray-900">{q.title}</p>
-                  <p className="text-xs text-gray-400 mt-0.5">{q._count?.questions ?? 0} questions</p>
+                  <p className="text-xs text-gray-400 mt-0.5">
+                    {q._count?.questions ?? 0} questions
+                  </p>
                 </button>
               ))}
             </div>
@@ -126,14 +147,21 @@ export function QuizManagerPage() {
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <h2 className="font-semibold text-gray-900">{selectedQuiz.title}</h2>
-                  {selectedQuiz.description && <p className="text-sm text-gray-500">{selectedQuiz.description}</p>}
+                  {selectedQuiz.description && (
+                    <p className="text-sm text-gray-500">{selectedQuiz.description}</p>
+                  )}
                 </div>
                 <div className="flex gap-2">
-                  <button onClick={() => setAddQuestionOpen(true)} className="btn-secondary text-sm gap-1">
+                  <button
+                    onClick={() => setAddQuestionOpen(true)}
+                    className="btn-secondary text-sm gap-1"
+                  >
                     <Plus className="h-3.5 w-3.5" /> Add Question
                   </button>
                   <button
-                    onClick={() => { if (confirm('Delete this quiz?')) deleteQuiz.mutate(selectedQuizId); }}
+                    onClick={() => {
+                      if (confirm('Delete this quiz?')) deleteQuiz.mutate(selectedQuizId);
+                    }}
                     className="btn-ghost text-sm text-red-500 hover:bg-red-50"
                   >
                     <Trash2 className="h-4 w-4" />
@@ -144,7 +172,10 @@ export function QuizManagerPage() {
               {!selectedQuiz.questions?.length ? (
                 <div className="card p-6 text-center">
                   <p className="text-gray-500 text-sm mb-3">No questions yet.</p>
-                  <button onClick={() => setAddQuestionOpen(true)} className="btn-primary text-sm gap-1">
+                  <button
+                    onClick={() => setAddQuestionOpen(true)}
+                    className="btn-primary text-sm gap-1"
+                  >
                     <Plus className="h-3.5 w-3.5" /> Add First Question
                   </button>
                 </div>
@@ -153,9 +184,13 @@ export function QuizManagerPage() {
                   {selectedQuiz.questions.map((q, qi) => (
                     <div key={q.id} className="card p-4">
                       <div className="flex items-start justify-between mb-3">
-                        <p className="font-medium text-gray-900">{qi + 1}. {q.text}</p>
+                        <p className="font-medium text-gray-900">
+                          {qi + 1}. {q.text}
+                        </p>
                         <button
-                          onClick={() => deleteQuestion.mutate({ quizId: selectedQuizId, questionId: q.id })}
+                          onClick={() =>
+                            deleteQuestion.mutate({ quizId: selectedQuizId, questionId: q.id })
+                          }
                           className="btn-ghost text-xs text-red-500 hover:bg-red-50 shrink-0"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
@@ -163,7 +198,10 @@ export function QuizManagerPage() {
                       </div>
                       <div className="space-y-1">
                         {q.options.map((opt) => (
-                          <div key={opt.id} className={`flex items-center gap-2 text-sm rounded px-2 py-1 ${opt.isCorrect ? 'bg-green-50 text-green-700' : 'text-gray-600'}`}>
+                          <div
+                            key={opt.id}
+                            className={`flex items-center gap-2 text-sm rounded px-2 py-1 ${opt.isCorrect ? 'bg-green-50 text-green-700' : 'text-gray-600'}`}
+                          >
                             {opt.isCorrect ? (
                               <CheckCircle className="h-3.5 w-3.5 text-green-500 shrink-0" />
                             ) : (
@@ -189,7 +227,12 @@ export function QuizManagerPage() {
 
       {/* Add question modal */}
       {selectedQuizId && (
-        <Modal open={addQuestionOpen} onClose={() => setAddQuestionOpen(false)} title="Add Question" size="lg">
+        <Modal
+          open={addQuestionOpen}
+          onClose={() => setAddQuestionOpen(false)}
+          title="Add Question"
+          size="lg"
+        >
           <QuestionForm onSubmit={(d) => addQuestion.mutate(d)} isPending={addQuestion.isPending} />
         </Modal>
       )}
@@ -197,18 +240,37 @@ export function QuizManagerPage() {
   );
 }
 
-function QuizCreateForm({ onSubmit, isPending }: { onSubmit: (d: QuizFormData) => void; isPending: boolean }) {
-  const { register, handleSubmit, formState: { errors } } = useForm<QuizFormData>({ resolver: zodResolver(quizSchema) });
+function QuizCreateForm({
+  onSubmit,
+  isPending,
+}: {
+  onSubmit: (d: QuizFormData) => void;
+  isPending: boolean;
+}) {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<QuizFormData>({ resolver: zodResolver(quizSchema) });
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div>
         <label className="label">Quiz Title *</label>
-        <input className="input" placeholder="e.g. React Fundamentals Quiz" {...register('title')} />
+        <input
+          className="input"
+          placeholder="e.g. React Fundamentals Quiz"
+          {...register('title')}
+        />
         {errors.title && <p className="text-xs text-red-600 mt-1">{errors.title.message}</p>}
       </div>
       <div>
         <label className="label">Description</label>
-        <textarea className="input" rows={2} placeholder="Optional description" {...register('description')} />
+        <textarea
+          className="input"
+          rows={2}
+          placeholder="Optional description"
+          {...register('description')}
+        />
       </div>
       <div className="flex justify-end gap-3 pt-2">
         <button type="submit" disabled={isPending} className="btn-primary">
@@ -219,8 +281,21 @@ function QuizCreateForm({ onSubmit, isPending }: { onSubmit: (d: QuizFormData) =
   );
 }
 
-function QuestionForm({ onSubmit, isPending }: { onSubmit: (d: QuestionFormData) => void; isPending: boolean }) {
-  const { register, handleSubmit, control, setValue, watch, formState: { errors } } = useForm<QuestionFormData>({
+function QuestionForm({
+  onSubmit,
+  isPending,
+}: {
+  onSubmit: (d: QuestionFormData) => void;
+  isPending: boolean;
+}) {
+  const {
+    register,
+    handleSubmit,
+    control,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm<QuestionFormData>({
     resolver: zodResolver(questionSchema),
     defaultValues: {
       text: '',
@@ -271,7 +346,9 @@ function QuestionForm({ onSubmit, isPending }: { onSubmit: (d: QuestionFormData)
             </div>
           ))}
         </div>
-        <p className="text-xs text-gray-400 mt-1">Click the radio button to mark the correct answer</p>
+        <p className="text-xs text-gray-400 mt-1">
+          Click the radio button to mark the correct answer
+        </p>
       </div>
       <div className="flex justify-end gap-3 pt-2">
         <button type="submit" disabled={isPending} className="btn-primary">

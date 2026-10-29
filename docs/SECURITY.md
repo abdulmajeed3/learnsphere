@@ -9,6 +9,7 @@ Passwords are hashed with **argon2id** (the `argon2` npm package). This is the c
 ## JWT Strategy
 
 ### Access Token
+
 - Algorithm: **HS256**
 - Lifetime: **15 minutes** (`JWT_EXPIRATION=15m`)
 - Payload: `{ sub: userId, email, role }`
@@ -16,6 +17,7 @@ Passwords are hashed with **argon2id** (the `argon2` npm package). This is the c
 - Secret: `JWT_SECRET` environment variable (must be set in production; no default provided)
 
 ### Refresh Token
+
 - Lifetime: **7 days**
 - Transport: httpOnly cookie (`refresh_token`)
 - The raw JWT is **never stored** — only its **SHA-256 hash** is persisted in the `RefreshToken` table.
@@ -25,6 +27,7 @@ Passwords are hashed with **argon2id** (the `argon2` npm package). This is the c
 ## Refresh Token Rotation
 
 Every call to `POST /auth/refresh`:
+
 1. Reads the `refresh_token` cookie.
 2. Hashes it with SHA-256 and looks up the hash in `RefreshToken`.
 3. Rejects the request if the record does not exist, is revoked (`isRevoked = true`), or is expired (`expiresAt < now`).
@@ -35,19 +38,20 @@ Every call to `POST /auth/refresh`:
 This means each refresh token can only be used once. If a stolen token is reused after legitimate rotation, the attempt fails.
 
 ### Revocation on Logout
+
 `POST /auth/logout` revokes the current refresh token immediately and clears the cookie, ending the session server-side.
 
 ---
 
 ## Cookie Configuration
 
-| Attribute | Value |
-|-----------|-------|
-| `httpOnly` | `true` — inaccessible to JavaScript |
-| `secure` | `true` in production, `false` in development |
+| Attribute  | Value                                         |
+| ---------- | --------------------------------------------- |
+| `httpOnly` | `true` — inaccessible to JavaScript           |
+| `secure`   | `true` in production, `false` in development  |
 | `sameSite` | `strict` — not sent on cross-site navigations |
-| `path` | `/` |
-| `maxAge` | `604800` (7 days in seconds) |
+| `path`     | `/`                                           |
+| `maxAge`   | `604800` (7 days in seconds)                  |
 
 ---
 
@@ -67,6 +71,7 @@ Only the configured frontend origin is permitted. No wildcard origin is used.
 ## Validation
 
 NestJS `ValidationPipe` is registered globally with:
+
 - `whitelist: true` — strips any property not declared in the DTO
 - `forbidNonWhitelisted: true` — returns `400 Bad Request` if unknown properties are sent
 - `transform: true` — coerces payload types to match DTO decorators

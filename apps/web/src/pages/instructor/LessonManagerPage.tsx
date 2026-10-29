@@ -29,7 +29,10 @@ export function LessonManagerPage() {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const { data: course } = useQuery({ queryKey: ['course', courseId], queryFn: () => coursesApi.get(courseId!) });
+  const { data: course } = useQuery({
+    queryKey: ['course', courseId],
+    queryFn: () => coursesApi.get(courseId!),
+  });
   const { data: lessons, isLoading } = useQuery({
     queryKey: ['lessons', courseId],
     queryFn: () => lessonsApi.list(courseId!),
@@ -39,19 +42,28 @@ export function LessonManagerPage() {
 
   const create = useMutation({
     mutationFn: (data: any) => lessonsApi.create(courseId!, data),
-    onSuccess: () => { invalidate(); setCreateOpen(false); },
+    onSuccess: () => {
+      invalidate();
+      setCreateOpen(false);
+    },
     onError: (e: any) => setError(e?.response?.data?.message ?? 'Failed'),
   });
 
   const update = useMutation({
     mutationFn: ({ id, data }: { id: string; data: any }) => lessonsApi.update(courseId!, id, data),
-    onSuccess: () => { invalidate(); setEditLesson(null); },
+    onSuccess: () => {
+      invalidate();
+      setEditLesson(null);
+    },
     onError: (e: any) => setError(e?.response?.data?.message ?? 'Failed'),
   });
 
   const remove = useMutation({
     mutationFn: (id: string) => lessonsApi.delete(courseId!, id),
-    onSuccess: () => { invalidate(); setDeleteId(null); },
+    onSuccess: () => {
+      invalidate();
+      setDeleteId(null);
+    },
     onError: (e: any) => setError(e?.response?.data?.message ?? 'Failed'),
   });
 
@@ -86,18 +98,32 @@ export function LessonManagerPage() {
           {lessons.map((lesson, i) => (
             <div key={lesson.id} className="card p-4 flex items-center gap-3">
               <GripVertical className="h-5 w-5 text-gray-300 shrink-0" />
-              <div className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ${lesson.type === 'VIDEO' ? 'bg-purple-100 text-purple-600' : 'bg-blue-100 text-blue-600'}`}>
-                {lesson.type === 'VIDEO' ? <PlayCircle className="h-4 w-4" /> : <BookOpen className="h-4 w-4" />}
+              <div
+                className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ${lesson.type === 'VIDEO' ? 'bg-purple-100 text-purple-600' : 'bg-blue-100 text-blue-600'}`}
+              >
+                {lesson.type === 'VIDEO' ? (
+                  <PlayCircle className="h-4 w-4" />
+                ) : (
+                  <BookOpen className="h-4 w-4" />
+                )}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-medium text-gray-900">{i + 1}. {lesson.title}</p>
-                <p className="text-xs text-gray-400">{lesson.type}{lesson.duration ? ` · ${lesson.duration}m` : ''}</p>
+                <p className="font-medium text-gray-900">
+                  {i + 1}. {lesson.title}
+                </p>
+                <p className="text-xs text-gray-400">
+                  {lesson.type}
+                  {lesson.duration ? ` · ${lesson.duration}m` : ''}
+                </p>
               </div>
               <div className="flex gap-1">
                 <button onClick={() => setEditLesson(lesson)} className="btn-ghost text-xs gap-1">
                   <Edit className="h-3.5 w-3.5" />
                 </button>
-                <button onClick={() => setDeleteId(lesson.id)} className="btn-ghost text-xs text-red-500 hover:bg-red-50">
+                <button
+                  onClick={() => setDeleteId(lesson.id)}
+                  className="btn-ghost text-xs text-red-500 hover:bg-red-50"
+                >
                   <Trash2 className="h-3.5 w-3.5" />
                 </button>
               </div>
@@ -131,8 +157,14 @@ export function LessonManagerPage() {
             <h3 className="font-semibold text-gray-900 mb-2">Delete Lesson?</h3>
             <p className="text-sm text-gray-500 mb-4">This action cannot be undone.</p>
             <div className="flex gap-3 justify-end">
-              <button onClick={() => setDeleteId(null)} className="btn-secondary text-sm">Cancel</button>
-              <button onClick={() => remove.mutate(deleteId)} disabled={remove.isPending} className="btn-danger text-sm">
+              <button onClick={() => setDeleteId(null)} className="btn-secondary text-sm">
+                Cancel
+              </button>
+              <button
+                onClick={() => remove.mutate(deleteId)}
+                disabled={remove.isPending}
+                className="btn-danger text-sm"
+              >
                 {remove.isPending ? 'Deleting...' : 'Delete'}
               </button>
             </div>
@@ -143,11 +175,27 @@ export function LessonManagerPage() {
   );
 }
 
-function LessonForm({ open, onClose, title, defaultValues, onSubmit, isPending }: {
-  open: boolean; onClose: () => void; title: string;
-  defaultValues?: Partial<Lesson>; onSubmit: (d: any) => void; isPending: boolean;
+function LessonForm({
+  open,
+  onClose,
+  title,
+  defaultValues,
+  onSubmit,
+  isPending,
+}: {
+  open: boolean;
+  onClose: () => void;
+  title: string;
+  defaultValues?: Partial<Lesson>;
+  onSubmit: (d: any) => void;
+  isPending: boolean;
 }) {
-  const { register, handleSubmit, watch, formState: { errors } } = useForm<FormData>({
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: { type: 'TEXT', ...defaultValues },
   });
@@ -171,23 +219,40 @@ function LessonForm({ open, onClose, title, defaultValues, onSubmit, isPending }
           </div>
           <div>
             <label className="label">Duration (min)</label>
-            <input type="number" className="input" placeholder="e.g. 15" {...register('duration')} />
+            <input
+              type="number"
+              className="input"
+              placeholder="e.g. 15"
+              {...register('duration')}
+            />
           </div>
         </div>
         {lessonType === 'VIDEO' ? (
           <div>
             <label className="label">Video URL</label>
-            <input className="input" placeholder="https://youtube.com/..." {...register('videoUrl')} />
-            {errors.videoUrl && <p className="text-xs text-red-600 mt-1">{errors.videoUrl.message}</p>}
+            <input
+              className="input"
+              placeholder="https://youtube.com/..."
+              {...register('videoUrl')}
+            />
+            {errors.videoUrl && (
+              <p className="text-xs text-red-600 mt-1">{errors.videoUrl.message}</p>
+            )}
           </div>
         ) : (
           <div>
             <label className="label">Content</label>
-            <textarea className="input min-h-36 resize-y font-mono text-sm" placeholder="Lesson content..." {...register('content')} />
+            <textarea
+              className="input min-h-36 resize-y font-mono text-sm"
+              placeholder="Lesson content..."
+              {...register('content')}
+            />
           </div>
         )}
         <div className="flex justify-end gap-3 pt-2">
-          <button type="button" onClick={onClose} className="btn-secondary">Cancel</button>
+          <button type="button" onClick={onClose} className="btn-secondary">
+            Cancel
+          </button>
           <button type="submit" disabled={isPending} className="btn-primary">
             {isPending ? <Spinner size="sm" /> : 'Save'}
           </button>

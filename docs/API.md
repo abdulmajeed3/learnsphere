@@ -4,6 +4,7 @@
 **Swagger UI**: `http://localhost:3001/api/docs`
 
 All authenticated endpoints require the header:
+
 ```
 Authorization: Bearer <accessToken>
 ```
@@ -13,27 +14,33 @@ Authorization: Bearer <accessToken>
 ## Auth
 
 ### `POST /auth/register`
+
 **Auth**: Public
 
 Register a new account.
 
 **Body**
+
 ```json
 { "email": "user@example.com", "name": "Alice", "password": "Str0ng!", "role": "STUDENT" }
 ```
 
 **Response** `201`
+
 ```json
 { "user": { "id": "...", "email": "...", "name": "...", "role": "STUDENT" }, "accessToken": "..." }
 ```
+
 Sets `refresh_token` httpOnly cookie.
 
 ---
 
 ### `POST /auth/login`
+
 **Auth**: Public
 
 **Body**
+
 ```json
 { "email": "user@example.com", "password": "Str0ng!" }
 ```
@@ -43,11 +50,13 @@ Sets `refresh_token` httpOnly cookie.
 ---
 
 ### `POST /auth/logout`
+
 **Auth**: Authenticated (Bearer)
 
 Revokes the current refresh token and clears the cookie.
 
 **Response** `200`
+
 ```json
 { "message": "Logged out successfully" }
 ```
@@ -55,19 +64,23 @@ Revokes the current refresh token and clears the cookie.
 ---
 
 ### `POST /auth/refresh`
+
 **Auth**: Public (uses httpOnly `refresh_token` cookie)
 
 Issues a new access token and rotates the refresh token.
 
 **Response** `200`
+
 ```json
 { "accessToken": "..." }
 ```
+
 Sets new `refresh_token` cookie.
 
 ---
 
 ### `GET /auth/me`
+
 **Auth**: Authenticated (Bearer)
 
 Returns the current user's profile.
@@ -79,6 +92,7 @@ Returns the current user's profile.
 ## Users
 
 ### `GET /users/profile`
+
 **Auth**: Authenticated (Bearer)
 
 Returns the authenticated user's full profile.
@@ -86,11 +100,13 @@ Returns the authenticated user's full profile.
 ---
 
 ### `PATCH /users/profile`
+
 **Auth**: Authenticated (Bearer)
 
 Update name, bio, or avatarUrl.
 
 **Body** (all optional)
+
 ```json
 { "name": "...", "bio": "...", "avatarUrl": "https://..." }
 ```
@@ -100,11 +116,13 @@ Update name, bio, or avatarUrl.
 ## Categories
 
 ### `GET /categories`
+
 **Auth**: Public
 
 Returns all course categories.
 
 **Response** `200`
+
 ```json
 [{ "id": "...", "name": "Web Development", "slug": "web-development", "description": "..." }]
 ```
@@ -114,6 +132,7 @@ Returns all course categories.
 ## Courses
 
 ### `GET /courses`
+
 **Auth**: Public
 
 Returns all **published** courses with instructor and category info. Supports query params for filtering.
@@ -121,6 +140,7 @@ Returns all **published** courses with instructor and category info. Supports qu
 ---
 
 ### `GET /courses/my`
+
 **Auth**: INSTRUCTOR only
 
 Returns all courses owned by the authenticated instructor (any status).
@@ -128,6 +148,7 @@ Returns all courses owned by the authenticated instructor (any status).
 ---
 
 ### `GET /courses/:id`
+
 **Auth**: Public
 
 Returns a single course with its lessons (published courses) or full detail for the owning instructor.
@@ -135,21 +156,28 @@ Returns a single course with its lessons (published courses) or full detail for 
 ---
 
 ### `POST /courses`
+
 **Auth**: INSTRUCTOR only
 
 Create a new course (created as `DRAFT`).
 
 **Body**
+
 ```json
 {
-  "title": "...", "description": "...", "shortDescription": "...",
-  "difficulty": "BEGINNER", "categoryId": "...", "objectives": ["..."]
+  "title": "...",
+  "description": "...",
+  "shortDescription": "...",
+  "difficulty": "BEGINNER",
+  "categoryId": "...",
+  "objectives": ["..."]
 }
 ```
 
 ---
 
 ### `PATCH /courses/:id`
+
 **Auth**: INSTRUCTOR (must own course)
 
 Update any course fields.
@@ -157,6 +185,7 @@ Update any course fields.
 ---
 
 ### `DELETE /courses/:id`
+
 **Auth**: INSTRUCTOR (must own course)
 
 Permanently deletes the course and cascades to lessons, quizzes, and enrollments.
@@ -164,6 +193,7 @@ Permanently deletes the course and cascades to lessons, quizzes, and enrollments
 ---
 
 ### `POST /courses/:id/publish`
+
 **Auth**: INSTRUCTOR (must own course)
 
 Sets course status to `PUBLISHED`. Requires at least one lesson.
@@ -171,6 +201,7 @@ Sets course status to `PUBLISHED`. Requires at least one lesson.
 ---
 
 ### `POST /courses/:id/unpublish`
+
 **Auth**: INSTRUCTOR (must own course)
 
 Sets course status back to `DRAFT`.
@@ -180,6 +211,7 @@ Sets course status back to `DRAFT`.
 ## Lessons
 
 ### `GET /courses/:courseId/lessons`
+
 **Auth**: Authenticated (enrolled students or owning instructor)
 
 Returns all lessons for a course ordered by `order`.
@@ -187,6 +219,7 @@ Returns all lessons for a course ordered by `order`.
 ---
 
 ### `GET /courses/:courseId/lessons/:id`
+
 **Auth**: Authenticated (enrolled student or owning instructor)
 
 Returns a single lesson with full content.
@@ -194,9 +227,11 @@ Returns a single lesson with full content.
 ---
 
 ### `POST /courses/:courseId/lessons`
+
 **Auth**: INSTRUCTOR (must own course)
 
 **Body**
+
 ```json
 { "title": "...", "type": "TEXT", "content": "...", "order": 1, "duration": 300 }
 ```
@@ -204,6 +239,7 @@ Returns a single lesson with full content.
 ---
 
 ### `PATCH /courses/:courseId/lessons/:id`
+
 **Auth**: INSTRUCTOR (must own course)
 
 Update lesson fields.
@@ -211,6 +247,7 @@ Update lesson fields.
 ---
 
 ### `DELETE /courses/:courseId/lessons/:id`
+
 **Auth**: INSTRUCTOR (must own course)
 
 Delete a lesson. Cascades to `LessonProgress`.
@@ -218,13 +255,20 @@ Delete a lesson. Cascades to `LessonProgress`.
 ---
 
 ### `PATCH /courses/:courseId/lessons/reorder`
+
 **Auth**: INSTRUCTOR (must own course)
 
 Atomically reassigns `order` values for all lessons.
 
 **Body**
+
 ```json
-{ "lessons": [{ "id": "...", "order": 1 }, { "id": "...", "order": 2 }] }
+{
+  "lessons": [
+    { "id": "...", "order": 1 },
+    { "id": "...", "order": 2 }
+  ]
+}
 ```
 
 ---
@@ -232,11 +276,13 @@ Atomically reassigns `order` values for all lessons.
 ## Enrollments
 
 ### `POST /enrollments`
+
 **Auth**: STUDENT only
 
 Enroll in a published course. Returns `409 Conflict` if already enrolled.
 
 **Body**
+
 ```json
 { "courseId": "..." }
 ```
@@ -244,6 +290,7 @@ Enroll in a published course. Returns `409 Conflict` if already enrolled.
 ---
 
 ### `GET /enrollments`
+
 **Auth**: STUDENT only
 
 Returns all of the student's enrollments with course info and progress percentage.
@@ -251,6 +298,7 @@ Returns all of the student's enrollments with course info and progress percentag
 ---
 
 ### `GET /enrollments/:id`
+
 **Auth**: STUDENT (must own enrollment)
 
 Returns a single enrollment with detailed progress.
@@ -258,6 +306,7 @@ Returns a single enrollment with detailed progress.
 ---
 
 ### `GET /enrollments/check/:courseId`
+
 **Auth**: STUDENT only
 
 Returns `{ enrolled: boolean, enrollmentId?: string }` for the given course.
@@ -267,6 +316,7 @@ Returns `{ enrolled: boolean, enrollmentId?: string }` for the given course.
 ## Progress
 
 ### `POST /progress/:lessonId/complete`
+
 **Auth**: STUDENT only (must be enrolled in the lesson's course)
 
 Marks a lesson as complete. Idempotent — marking an already-completed lesson returns `200` without error.
@@ -274,6 +324,7 @@ Marks a lesson as complete. Idempotent — marking an already-completed lesson r
 ---
 
 ### `DELETE /progress/:lessonId/complete`
+
 **Auth**: STUDENT only (must own progress record)
 
 Unmarks a lesson as complete.
@@ -281,9 +332,11 @@ Unmarks a lesson as complete.
 ---
 
 ### `GET /progress/courses/:courseId`
+
 **Auth**: STUDENT only (must be enrolled)
 
 Returns progress summary for a course:
+
 ```json
 {
   "totalLessons": 10,
@@ -298,6 +351,7 @@ Returns progress summary for a course:
 ## Quizzes
 
 ### `GET /quizzes/course/:courseId`
+
 **Auth**: Authenticated (enrolled student or owning instructor)
 
 Returns all quizzes for a course. `isCorrect` is **stripped from options** for students.
@@ -305,6 +359,7 @@ Returns all quizzes for a course. `isCorrect` is **stripped from options** for s
 ---
 
 ### `GET /quizzes/:id`
+
 **Auth**: Authenticated (enrolled student or owning instructor)
 
 Returns a single quiz with questions and options. `isCorrect` stripped for students.
@@ -312,11 +367,13 @@ Returns a single quiz with questions and options. `isCorrect` stripped for stude
 ---
 
 ### `POST /quizzes/course/:courseId`
+
 **Auth**: INSTRUCTOR (must own course)
 
 Create a quiz.
 
 **Body**
+
 ```json
 { "title": "...", "description": "...", "lessonId": "..." }
 ```
@@ -324,6 +381,7 @@ Create a quiz.
 ---
 
 ### `PATCH /quizzes/:id`
+
 **Auth**: INSTRUCTOR (must own quiz's course)
 
 Update quiz title/description.
@@ -331,6 +389,7 @@ Update quiz title/description.
 ---
 
 ### `DELETE /quizzes/:id`
+
 **Auth**: INSTRUCTOR (must own quiz's course)
 
 Delete quiz and cascade to questions, options, attempts.
@@ -338,11 +397,13 @@ Delete quiz and cascade to questions, options, attempts.
 ---
 
 ### `POST /quizzes/:id/questions`
+
 **Auth**: INSTRUCTOR (must own quiz's course)
 
 Add a question with its options.
 
 **Body**
+
 ```json
 {
   "text": "What is X?",
@@ -357,6 +418,7 @@ Add a question with its options.
 ---
 
 ### `PATCH /quizzes/:id/questions/:questionId`
+
 **Auth**: INSTRUCTOR (must own quiz's course)
 
 Update question text or order.
@@ -364,6 +426,7 @@ Update question text or order.
 ---
 
 ### `DELETE /quizzes/:id/questions/:questionId`
+
 **Auth**: INSTRUCTOR (must own quiz's course)
 
 Delete a question and its options.
@@ -371,20 +434,21 @@ Delete a question and its options.
 ---
 
 ### `POST /quizzes/:id/attempt`
+
 **Auth**: STUDENT only (must be enrolled in quiz's course)
 
 Submit a quiz attempt.
 
 **Body**
+
 ```json
 {
-  "answers": [
-    { "questionId": "...", "selectedOptionId": "..." }
-  ]
+  "answers": [{ "questionId": "...", "selectedOptionId": "..." }]
 }
 ```
 
 **Response** `201`
+
 ```json
 { "score": 8, "totalPoints": 10, "percentage": 80, "answers": [...] }
 ```
@@ -392,6 +456,7 @@ Submit a quiz attempt.
 ---
 
 ### `GET /quizzes/:id/attempts`
+
 **Auth**: STUDENT only
 
 Returns all attempts for the authenticated student on this quiz.
@@ -399,6 +464,7 @@ Returns all attempts for the authenticated student on this quiz.
 ---
 
 ### `GET /quizzes/:id/stats`
+
 **Auth**: INSTRUCTOR (must own quiz's course)
 
 Returns aggregate attempt statistics: attempt count, average score, score distribution.
@@ -408,9 +474,11 @@ Returns aggregate attempt statistics: attempt count, average score, score distri
 ## Dashboard
 
 ### `GET /dashboard/student`
+
 **Auth**: STUDENT only
 
 Returns:
+
 ```json
 {
   "enrolledCourses": 5,
@@ -424,9 +492,11 @@ Returns:
 ---
 
 ### `GET /dashboard/instructor`
+
 **Auth**: INSTRUCTOR only
 
 Returns:
+
 ```json
 {
   "totalCourses": 4,

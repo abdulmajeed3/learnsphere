@@ -4,10 +4,10 @@
 
 LearnSphere is an npm workspaces monorepo containing two packages:
 
-| Package | Path | Description |
-|---------|------|-------------|
-| `api` | `apps/api` | NestJS + Fastify REST API |
-| `web` | `apps/web` | React + Vite SPA |
+| Package | Path       | Description               |
+| ------- | ---------- | ------------------------- |
+| `api`   | `apps/api` | NestJS + Fastify REST API |
+| `web`   | `apps/web` | React + Vite SPA          |
 
 ---
 
@@ -44,18 +44,18 @@ src/
 
 ### Module Responsibilities
 
-| Module | Responsibility |
-|--------|---------------|
-| `auth` | Register, login, logout, token refresh, `GET /auth/me`. Issues JWTs and manages httpOnly refresh cookies. |
-| `users` | `GET /users/profile`, `PATCH /users/profile`. Authenticated profile view/update. |
-| `categories` | `GET /categories`. Public read of all course categories. |
-| `courses` | Full CRUD for INSTRUCTOR-owned courses plus publish/unpublish toggles. Public catalog listing for STUDENT. |
-| `lessons` | CRUD for lessons scoped to a course. Ownership enforced through the course. Supports atomic reorder. |
-| `enrollments` | Students enroll in published courses. Duplicate enrollment blocked at DB level. |
-| `progress` | Mark/unmark a lesson complete. Rolls up progress percentage for a course. |
-| `quizzes` | INSTRUCTOR creates quizzes with questions and options. Students submit attempts. Stats endpoint for instructors. |
-| `dashboard` | Returns aggregate stats (enrolled courses + progress, or published courses + enrollment counts) in one query. |
-| `prisma` | Wraps `PrismaClient`, exported globally, handles `onModuleInit` / `onModuleDestroy`. |
+| Module        | Responsibility                                                                                                   |
+| ------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `auth`        | Register, login, logout, token refresh, `GET /auth/me`. Issues JWTs and manages httpOnly refresh cookies.        |
+| `users`       | `GET /users/profile`, `PATCH /users/profile`. Authenticated profile view/update.                                 |
+| `categories`  | `GET /categories`. Public read of all course categories.                                                         |
+| `courses`     | Full CRUD for INSTRUCTOR-owned courses plus publish/unpublish toggles. Public catalog listing for STUDENT.       |
+| `lessons`     | CRUD for lessons scoped to a course. Ownership enforced through the course. Supports atomic reorder.             |
+| `enrollments` | Students enroll in published courses. Duplicate enrollment blocked at DB level.                                  |
+| `progress`    | Mark/unmark a lesson complete. Rolls up progress percentage for a course.                                        |
+| `quizzes`     | INSTRUCTOR creates quizzes with questions and options. Students submit attempts. Stats endpoint for instructors. |
+| `dashboard`   | Returns aggregate stats (enrolled courses + progress, or published courses + enrollment counts) in one query.    |
+| `prisma`      | Wraps `PrismaClient`, exported globally, handles `onModuleInit` / `onModuleDestroy`.                             |
 
 ---
 
@@ -92,21 +92,21 @@ src/
 
 ### Routing
 
-| Route | Page | Guard |
-|-------|------|-------|
-| `/` | HomePage | Public |
-| `/login` | LoginPage | Redirect if authed |
-| `/register` | RegisterPage | Redirect if authed |
-| `/courses` | CourseCatalog | Public |
-| `/courses/:id` | CourseDetail | Public |
-| `/courses/:courseId/lessons/:lessonId` | CourseLesson | Student enrolled |
-| `/profile` | ProfilePage | Authenticated |
-| `/student/dashboard` | StudentDashboard | STUDENT |
-| `/student/my-learning` | MyLearning | STUDENT |
-| `/instructor/dashboard` | InstructorDashboard | INSTRUCTOR |
-| `/instructor/courses/:id/edit` | CourseEditor | INSTRUCTOR owns course |
-| `/instructor/courses/:id/lessons/:lid/edit` | LessonEditor | INSTRUCTOR owns course |
-| `/instructor/courses/:id/quizzes` | QuizEditor | INSTRUCTOR owns course |
+| Route                                       | Page                | Guard                  |
+| ------------------------------------------- | ------------------- | ---------------------- |
+| `/`                                         | HomePage            | Public                 |
+| `/login`                                    | LoginPage           | Redirect if authed     |
+| `/register`                                 | RegisterPage        | Redirect if authed     |
+| `/courses`                                  | CourseCatalog       | Public                 |
+| `/courses/:id`                              | CourseDetail        | Public                 |
+| `/courses/:courseId/lessons/:lessonId`      | CourseLesson        | Student enrolled       |
+| `/profile`                                  | ProfilePage         | Authenticated          |
+| `/student/dashboard`                        | StudentDashboard    | STUDENT                |
+| `/student/my-learning`                      | MyLearning          | STUDENT                |
+| `/instructor/dashboard`                     | InstructorDashboard | INSTRUCTOR             |
+| `/instructor/courses/:id/edit`              | CourseEditor        | INSTRUCTOR owns course |
+| `/instructor/courses/:id/lessons/:lid/edit` | LessonEditor        | INSTRUCTOR owns course |
+| `/instructor/courses/:id/quizzes`           | QuizEditor          | INSTRUCTOR owns course |
 
 ---
 

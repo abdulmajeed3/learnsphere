@@ -36,7 +36,8 @@ export default function App() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      authApi.me()
+      authApi
+        .me()
         .then((user) => setAuth(user, localStorage.getItem('access_token') ?? ''))
         .catch(() => clearAuth());
     }
@@ -57,49 +58,93 @@ export default function App() {
 
         <Route
           path="/student/dashboard"
-          element={<ProtectedRoute roles={['STUDENT']}><StudentDashboard /></ProtectedRoute>}
+          element={
+            <ProtectedRoute roles={['STUDENT']}>
+              <StudentDashboard />
+            </ProtectedRoute>
+          }
         />
         <Route
           path="/learn/:courseId/lessons/:lessonId"
-          element={<ProtectedRoute roles={['STUDENT']}><LessonViewerPage /></ProtectedRoute>}
+          element={
+            <ProtectedRoute roles={['STUDENT']}>
+              <LessonViewerPage />
+            </ProtectedRoute>
+          }
         />
         <Route
           path="/quizzes/:quizId/attempt"
-          element={<ProtectedRoute roles={['STUDENT']}><QuizAttemptPage /></ProtectedRoute>}
+          element={
+            <ProtectedRoute roles={['STUDENT']}>
+              <QuizAttemptPage />
+            </ProtectedRoute>
+          }
         />
         <Route
           path="/quizzes/:quizId/results"
-          element={<ProtectedRoute roles={['STUDENT']}><QuizResultPage /></ProtectedRoute>}
+          element={
+            <ProtectedRoute roles={['STUDENT']}>
+              <QuizResultPage />
+            </ProtectedRoute>
+          }
         />
 
         <Route
           path="/instructor/dashboard"
-          element={<ProtectedRoute roles={['INSTRUCTOR']}><InstructorDashboard /></ProtectedRoute>}
+          element={
+            <ProtectedRoute roles={['INSTRUCTOR']}>
+              <InstructorDashboard />
+            </ProtectedRoute>
+          }
         />
         <Route
           path="/instructor/courses"
-          element={<ProtectedRoute roles={['INSTRUCTOR']}><InstructorCoursesPage /></ProtectedRoute>}
+          element={
+            <ProtectedRoute roles={['INSTRUCTOR']}>
+              <InstructorCoursesPage />
+            </ProtectedRoute>
+          }
         />
         <Route
           path="/instructor/courses/new"
-          element={<ProtectedRoute roles={['INSTRUCTOR']}><CourseEditorPage /></ProtectedRoute>}
+          element={
+            <ProtectedRoute roles={['INSTRUCTOR']}>
+              <CourseEditorPage />
+            </ProtectedRoute>
+          }
         />
         <Route
           path="/instructor/courses/:courseId/edit"
-          element={<ProtectedRoute roles={['INSTRUCTOR']}><CourseEditorPage /></ProtectedRoute>}
+          element={
+            <ProtectedRoute roles={['INSTRUCTOR']}>
+              <CourseEditorPage />
+            </ProtectedRoute>
+          }
         />
         <Route
           path="/instructor/courses/:courseId/lessons"
-          element={<ProtectedRoute roles={['INSTRUCTOR']}><LessonManagerPage /></ProtectedRoute>}
+          element={
+            <ProtectedRoute roles={['INSTRUCTOR']}>
+              <LessonManagerPage />
+            </ProtectedRoute>
+          }
         />
         <Route
           path="/instructor/courses/:courseId/quizzes"
-          element={<ProtectedRoute roles={['INSTRUCTOR']}><QuizManagerPage /></ProtectedRoute>}
+          element={
+            <ProtectedRoute roles={['INSTRUCTOR']}>
+              <QuizManagerPage />
+            </ProtectedRoute>
+          }
         />
 
         <Route
           path="/profile"
-          element={<ProtectedRoute><ProfilePage /></ProtectedRoute>}
+          element={
+            <ProtectedRoute>
+              <ProfilePage />
+            </ProtectedRoute>
+          }
         />
 
         <Route path="*" element={<NotFoundPage />} />

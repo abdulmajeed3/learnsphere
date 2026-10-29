@@ -26,7 +26,11 @@ export class LessonsController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get a single lesson' })
-  findOne(@Param('courseId') courseId: string, @Param('lessonId') lessonId: string, @CurrentUser() user: any) {
+  findOne(
+    @Param('courseId') courseId: string,
+    @Param('lessonId') lessonId: string,
+    @CurrentUser() user: any,
+  ) {
     return this.lessonsService.findOne(courseId, lessonId, user.id);
   }
 
@@ -35,7 +39,11 @@ export class LessonsController {
   @Roles('INSTRUCTOR')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Create lesson' })
-  create(@Param('courseId') courseId: string, @CurrentUser() user: any, @Body() dto: CreateLessonDto) {
+  create(
+    @Param('courseId') courseId: string,
+    @CurrentUser() user: any,
+    @Body() dto: CreateLessonDto,
+  ) {
     return this.lessonsService.create(courseId, user.id, dto);
   }
 
@@ -44,7 +52,11 @@ export class LessonsController {
   @Roles('INSTRUCTOR')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Reorder lessons' })
-  reorder(@Param('courseId') courseId: string, @CurrentUser() user: any, @Body() dto: ReorderLessonsDto) {
+  reorder(
+    @Param('courseId') courseId: string,
+    @CurrentUser() user: any,
+    @Body() dto: ReorderLessonsDto,
+  ) {
     return this.lessonsService.reorder(courseId, user.id, dto);
   }
 
@@ -53,7 +65,12 @@ export class LessonsController {
   @Roles('INSTRUCTOR')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update lesson' })
-  update(@Param('courseId') courseId: string, @Param('lessonId') lessonId: string, @CurrentUser() user: any, @Body() dto: UpdateLessonDto) {
+  update(
+    @Param('courseId') courseId: string,
+    @Param('lessonId') lessonId: string,
+    @CurrentUser() user: any,
+    @Body() dto: UpdateLessonDto,
+  ) {
     return this.lessonsService.update(courseId, lessonId, user.id, dto);
   }
 
@@ -62,7 +79,11 @@ export class LessonsController {
   @Roles('INSTRUCTOR')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Delete lesson' })
-  remove(@Param('courseId') courseId: string, @Param('lessonId') lessonId: string, @CurrentUser() user: any) {
+  remove(
+    @Param('courseId') courseId: string,
+    @Param('lessonId') lessonId: string,
+    @CurrentUser() user: any,
+  ) {
     return this.lessonsService.remove(courseId, lessonId, user.id);
   }
 }

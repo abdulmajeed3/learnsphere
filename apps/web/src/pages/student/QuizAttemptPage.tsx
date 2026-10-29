@@ -29,7 +29,12 @@ export function QuizAttemptPage() {
   });
 
   if (isLoading) return <PageSpinner />;
-  if (!quiz) return <div className="max-w-3xl mx-auto px-4 py-8"><Alert message="Quiz not found." /></div>;
+  if (!quiz)
+    return (
+      <div className="max-w-3xl mx-auto px-4 py-8">
+        <Alert message="Quiz not found." />
+      </div>
+    );
 
   const questions = quiz.questions ?? [];
   const allAnswered = questions.every((q) => answers[q.id]);
@@ -62,7 +67,9 @@ export function QuizAttemptPage() {
                       onChange={() => setAnswers((prev) => ({ ...prev, [q.id]: opt.id }))}
                       className="h-4 w-4 text-primary-600"
                     />
-                    <span className={`text-sm ${answers[q.id] === opt.id ? 'text-primary-700 font-medium' : 'text-gray-700'}`}>
+                    <span
+                      className={`text-sm ${answers[q.id] === opt.id ? 'text-primary-700 font-medium' : 'text-gray-700'}`}
+                    >
                       {opt.text}
                     </span>
                   </label>
@@ -72,7 +79,9 @@ export function QuizAttemptPage() {
           ))}
 
           {submit.isError && (
-            <Alert message={(submit.error as any)?.response?.data?.message ?? 'Submission failed'} />
+            <Alert
+              message={(submit.error as any)?.response?.data?.message ?? 'Submission failed'}
+            />
           )}
 
           <div className="flex items-center justify-between">

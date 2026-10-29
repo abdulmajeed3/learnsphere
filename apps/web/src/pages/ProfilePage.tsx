@@ -19,17 +19,22 @@ export function ProfilePage() {
   const { user, updateUser } = useAuthStore();
   const qc = useQueryClient();
 
-  const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormData>({
     resolver: zodResolver(schema),
     values: { name: user?.name ?? '', bio: user?.bio ?? '', avatarUrl: user?.avatarUrl ?? '' },
   });
 
   const update = useMutation({
-    mutationFn: (data: FormData) => usersApi.updateProfile({
-      name: data.name,
-      bio: data.bio || undefined,
-      avatarUrl: data.avatarUrl || undefined,
-    }),
+    mutationFn: (data: FormData) =>
+      usersApi.updateProfile({
+        name: data.name,
+        bio: data.bio || undefined,
+        avatarUrl: data.avatarUrl || undefined,
+      }),
     onSuccess: (updated) => {
       updateUser(updated);
       qc.setQueryData(['me'], updated);
@@ -44,7 +49,11 @@ export function ProfilePage() {
         <div className="flex items-center gap-4 mb-6 pb-6 border-b border-gray-100">
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary-100">
             {user?.avatarUrl ? (
-              <img src={user.avatarUrl} alt={user.name} className="h-16 w-16 rounded-full object-cover" />
+              <img
+                src={user.avatarUrl}
+                alt={user.name}
+                className="h-16 w-16 rounded-full object-cover"
+              />
             ) : (
               <User className="h-8 w-8 text-primary-600" />
             )}
@@ -56,9 +65,14 @@ export function ProfilePage() {
           </div>
         </div>
 
-        {update.isSuccess && <Alert variant="success" message="Profile updated successfully!" className="mb-4" />}
+        {update.isSuccess && (
+          <Alert variant="success" message="Profile updated successfully!" className="mb-4" />
+        )}
         {update.isError && (
-          <Alert message={(update.error as any)?.response?.data?.message ?? 'Update failed'} className="mb-4" />
+          <Alert
+            message={(update.error as any)?.response?.data?.message ?? 'Update failed'}
+            className="mb-4"
+          />
         )}
 
         <form onSubmit={handleSubmit((d) => update.mutate(d))} className="space-y-4">
@@ -70,13 +84,19 @@ export function ProfilePage() {
 
           <div>
             <label className="label">Bio</label>
-            <textarea className="input min-h-24 resize-y" placeholder="Tell students about yourself..." {...register('bio')} />
+            <textarea
+              className="input min-h-24 resize-y"
+              placeholder="Tell students about yourself..."
+              {...register('bio')}
+            />
           </div>
 
           <div>
             <label className="label">Avatar URL</label>
             <input className="input" placeholder="https://..." {...register('avatarUrl')} />
-            {errors.avatarUrl && <p className="text-xs text-red-600 mt-1">{errors.avatarUrl.message}</p>}
+            {errors.avatarUrl && (
+              <p className="text-xs text-red-600 mt-1">{errors.avatarUrl.message}</p>
+            )}
           </div>
 
           <div className="pt-2">

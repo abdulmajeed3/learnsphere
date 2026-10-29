@@ -67,8 +67,12 @@ export function Navbar() {
               </>
             ) : (
               <>
-                <Link to="/login" className="btn-secondary text-sm">Sign In</Link>
-                <Link to="/register" className="btn-primary text-sm">Get Started</Link>
+                <Link to="/login" className="btn-secondary text-sm">
+                  Sign In
+                </Link>
+                <Link to="/register" className="btn-primary text-sm">
+                  Get Started
+                </Link>
               </>
             )}
           </div>
@@ -100,15 +104,30 @@ export function Navbar() {
           ))}
           {isAuthenticated ? (
             <button
-              onClick={() => { logout.mutate(); setMobileOpen(false); }}
+              onClick={() => {
+                logout.mutate();
+                setMobileOpen(false);
+              }}
               className="mt-2 flex items-center gap-2 px-3 py-2 text-sm text-gray-600"
             >
               <LogOut className="h-4 w-4" /> Logout
             </button>
           ) : (
             <div className="mt-2 flex gap-2">
-              <Link to="/login" className="btn-secondary flex-1 text-sm" onClick={() => setMobileOpen(false)}>Sign In</Link>
-              <Link to="/register" className="btn-primary flex-1 text-sm" onClick={() => setMobileOpen(false)}>Get Started</Link>
+              <Link
+                to="/login"
+                className="btn-secondary flex-1 text-sm"
+                onClick={() => setMobileOpen(false)}
+              >
+                Sign In
+              </Link>
+              <Link
+                to="/register"
+                className="btn-primary flex-1 text-sm"
+                onClick={() => setMobileOpen(false)}
+              >
+                Get Started
+              </Link>
             </div>
           )}
         </div>

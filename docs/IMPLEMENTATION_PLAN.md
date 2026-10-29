@@ -83,13 +83,13 @@ This document records the phases used to build LearnSphere v1.0 from scratch.
 
 All checks passed:
 
-| Check | Result |
-|-------|--------|
-| `npm run type-check` (API) | **PASS** |
-| `npm run type-check` (Web) | **PASS** |
-| `npm run build:api` | **PASS** |
-| `npm run build:web` | **PASS** |
-| Backend tests (8 tests, 3 files) | **PASS** |
+| Check                             | Result   |
+| --------------------------------- | -------- |
+| `npm run type-check` (API)        | **PASS** |
+| `npm run type-check` (Web)        | **PASS** |
+| `npm run build:api`               | **PASS** |
+| `npm run build:web`               | **PASS** |
+| Backend tests (8 tests, 3 files)  | **PASS** |
 | Frontend tests (5 tests, 2 files) | **PASS** |
 
 ---

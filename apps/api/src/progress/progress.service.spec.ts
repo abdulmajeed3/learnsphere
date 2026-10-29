@@ -13,10 +13,7 @@ describe('ProgressService', () => {
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
-      providers: [
-        ProgressService,
-        { provide: PrismaService, useValue: mockPrisma },
-      ],
+      providers: [ProgressService, { provide: PrismaService, useValue: mockPrisma }],
     }).compile();
     service = module.get<ProgressService>(ProgressService);
     jest.clearAllMocks();

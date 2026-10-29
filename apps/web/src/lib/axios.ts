@@ -33,11 +33,7 @@ api.interceptors.response.use(
       original._retry = true;
       refreshing = true;
       try {
-        const { data } = await axios.post(
-          `${API_URL}/auth/refresh`,
-          {},
-          { withCredentials: true },
-        );
+        const { data } = await axios.post(`${API_URL}/auth/refresh`, {}, { withCredentials: true });
         const { accessToken } = data;
         localStorage.setItem('access_token', accessToken);
         queue.forEach((p) => p.resolve(accessToken));

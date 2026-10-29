@@ -8,7 +8,19 @@ vi.mock('@/api/courses', () => ({
   coursesApi: {
     list: vi.fn().mockResolvedValue({
       data: [
-        { id: '1', title: 'React Course', slug: 'react', description: 'Learn React', status: 'PUBLISHED', difficulty: 'BEGINNER', objectives: [], _count: { lessons: 5, enrollments: 10 }, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), instructor: { id: 'i1', name: 'Alice' } },
+        {
+          id: '1',
+          title: 'React Course',
+          slug: 'react',
+          description: 'Learn React',
+          status: 'PUBLISHED',
+          difficulty: 'BEGINNER',
+          objectives: [],
+          _count: { lessons: 5, enrollments: 10 },
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          instructor: { id: 'i1', name: 'Alice' },
+        },
       ],
       meta: { total: 1, page: 1, limit: 12, totalPages: 1 },
     }),

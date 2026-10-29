@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateQuizDto } from './dto/create-quiz.dto';
 import { UpdateQuizDto } from './dto/update-quiz.dto';
@@ -11,7 +16,10 @@ export class QuizzesService {
   constructor(private prisma: PrismaService) {}
 
   private async verifyQuizOwnership(quizId: string, instructorId: string) {
-    const quiz = await this.prisma.quiz.findUnique({ where: { id: quizId }, include: { course: true } });
+    const quiz = await this.prisma.quiz.findUnique({
+      where: { id: quizId },
+      include: { course: true },
+    });
     if (!quiz) throw new NotFoundException('Quiz not found');
     if (quiz.course.instructorId !== instructorId) throw new ForbiddenException('Access denied');
     return quiz;
@@ -94,11 +102,15 @@ export class QuizzesService {
 
   async addQuestion(quizId: string, instructorId: string, dto: CreateQuestionDto) {
     await this.verifyQuizOwnership(quizId, instructorId);
-    const max = await this.prisma.quizQuestion.aggregate({ where: { quizId }, _max: { order: true } });
+    const max = await this.prisma.quizQuestion.aggregate({
+      where: { quizId },
+      _max: { order: true },
+    });
     const order = (max._max.order ?? 0) + 1;
 
     const correctCount = dto.options.filter((o) => o.isCorrect).length;
-    if (correctCount !== 1) throw new BadRequestException('Each question must have exactly one correct answer');
+    if (correctCount !== 1)
+      throw new BadRequestException('Each question must have exactly one correct answer');
 
     return this.prisma.quizQuestion.create({
       data: {
@@ -111,14 +123,22 @@ export class QuizzesService {
     });
   }
 
-  async updateQuestion(quizId: string, questionId: string, instructorId: string, dto: UpdateQuestionDto) {
+  async updateQuestion(
+    quizId: string,
+    questionId: string,
+    instructorId: string,
+    dto: UpdateQuestionDto,
+  ) {
     await this.verifyQuizOwnership(quizId, instructorId);
-    const question = await this.prisma.quizQuestion.findFirst({ where: { id: questionId, quizId } });
+    const question = await this.prisma.quizQuestion.findFirst({
+      where: { id: questionId, quizId },
+    });
     if (!question) throw new NotFoundException('Question not found');
 
     if (dto.options) {
       const correctCount = dto.options.filter((o) => o.isCorrect).length;
-      if (correctCount !== 1) throw new BadRequestException('Each question must have exactly one correct answer');
+      if (correctCount !== 1)
+        throw new BadRequestException('Each question must have exactly one correct answer');
       await this.prisma.quizOption.deleteMany({ where: { questionId } });
     }
 
@@ -134,7 +154,9 @@ export class QuizzesService {
 
   async deleteQuestion(quizId: string, questionId: string, instructorId: string) {
     await this.verifyQuizOwnership(quizId, instructorId);
-    const question = await this.prisma.quizQuestion.findFirst({ where: { id: questionId, quizId } });
+    const question = await this.prisma.quizQuestion.findFirst({
+      where: { id: questionId, quizId },
+    });
     if (!question) throw new NotFoundException('Question not found');
     await this.prisma.quizQuestion.delete({ where: { id: questionId } });
     return { message: 'Question deleted' };
@@ -155,7 +177,8 @@ export class QuizzesService {
 
     const questionIds = new Set(quiz.questions.map((q) => q.id));
     for (const answer of dto.answers) {
-      if (!questionIds.has(answer.questionId)) throw new BadRequestException(`Invalid question: ${answer.questionId}`);
+      if (!questionIds.has(answer.questionId))
+        throw new BadRequestException(`Invalid question: ${answer.questionId}`);
       const question = quiz.questions.find((q) => q.id === answer.questionId)!;
       const optionIds = new Set(question.options.map((o) => o.id));
       if (answer.selectedOptionId && !optionIds.has(answer.selectedOptionId)) {
@@ -223,7 +246,8 @@ export class QuizzesService {
 
     if (attempts.length === 0) return { totalAttempts: 0, averageScore: 0, averagePercentage: 0 };
 
-    const avg = attempts.reduce((sum, a) => sum + (a.score / a.totalPoints) * 100, 0) / attempts.length;
+    const avg =
+      attempts.reduce((sum, a) => sum + (a.score / a.totalPoints) * 100, 0) / attempts.length;
     return {
       totalAttempts: attempts.length,
       averageScore: attempts.reduce((s, a) => s + a.score, 0) / attempts.length,

@@ -22,7 +22,11 @@ export function LessonViewerPage() {
     queryFn: () => lessonsApi.list(courseId!),
   });
 
-  const { data: lesson, isLoading, error } = useQuery({
+  const {
+    data: lesson,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ['lesson', courseId, lessonId],
     queryFn: () => lessonsApi.get(courseId!, lessonId!),
   });
@@ -43,9 +47,12 @@ export function LessonViewerPage() {
   });
 
   if (isLoading) return <PageSpinner />;
-  if (error || !lesson) return (
-    <div className="max-w-3xl mx-auto px-4 py-8"><Alert message="Lesson not found." /></div>
-  );
+  if (error || !lesson)
+    return (
+      <div className="max-w-3xl mx-auto px-4 py-8">
+        <Alert message="Lesson not found." />
+      </div>
+    );
 
   const isCompleted = progress?.completedLessonIds.includes(lessonId!);
   const currentIndex = lessons?.findIndex((l) => l.id === lessonId) ?? -1;
@@ -59,7 +66,10 @@ export function LessonViewerPage() {
         <div className="lg:col-span-1 order-2 lg:order-1">
           <div className="card overflow-hidden">
             <div className="border-b border-gray-100 px-4 py-3">
-              <Link to={`/courses/${courseId}`} className="text-sm text-primary-600 hover:text-primary-700 flex items-center gap-1">
+              <Link
+                to={`/courses/${courseId}`}
+                className="text-sm text-primary-600 hover:text-primary-700 flex items-center gap-1"
+              >
                 <ChevronLeft className="h-4 w-4" /> {course?.title}
               </Link>
             </div>
@@ -76,9 +86,13 @@ export function LessonViewerPage() {
                     {done ? (
                       <CheckCircle className="h-4 w-4 text-green-500 shrink-0" />
                     ) : (
-                      <Circle className={`h-4 w-4 shrink-0 ${active ? 'text-primary-500' : 'text-gray-300'}`} />
+                      <Circle
+                        className={`h-4 w-4 shrink-0 ${active ? 'text-primary-500' : 'text-gray-300'}`}
+                      />
                     )}
-                    <span className={`flex-1 truncate ${active ? 'font-medium text-primary-700' : 'text-gray-600'}`}>
+                    <span
+                      className={`flex-1 truncate ${active ? 'font-medium text-primary-700' : 'text-gray-600'}`}
+                    >
                       {i + 1}. {l.title}
                     </span>
                   </Link>
@@ -98,7 +112,7 @@ export function LessonViewerPage() {
               <h1 className="text-2xl font-bold text-gray-900">{lesson.title}</h1>
             </div>
             <button
-              onClick={() => isCompleted ? markIncomplete.mutate() : markComplete.mutate()}
+              onClick={() => (isCompleted ? markIncomplete.mutate() : markComplete.mutate())}
               disabled={markComplete.isPending || markIncomplete.isPending}
               className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
                 isCompleted
@@ -107,9 +121,13 @@ export function LessonViewerPage() {
               }`}
             >
               {isCompleted ? (
-                <><CheckCircle className="h-4 w-4" /> Completed</>
+                <>
+                  <CheckCircle className="h-4 w-4" /> Completed
+                </>
               ) : (
-                <><Circle className="h-4 w-4" /> Mark Complete</>
+                <>
+                  <Circle className="h-4 w-4" /> Mark Complete
+                </>
               )}
             </button>
           </div>
@@ -150,12 +168,20 @@ export function LessonViewerPage() {
           {/* Navigation */}
           <div className="flex items-center justify-between">
             {prevLesson ? (
-              <Link to={`/learn/${courseId}/lessons/${prevLesson.id}`} className="btn-secondary text-sm">
+              <Link
+                to={`/learn/${courseId}/lessons/${prevLesson.id}`}
+                className="btn-secondary text-sm"
+              >
                 <ChevronLeft className="h-4 w-4" /> Previous
               </Link>
-            ) : <div />}
+            ) : (
+              <div />
+            )}
             {nextLesson ? (
-              <Link to={`/learn/${courseId}/lessons/${nextLesson.id}`} className="btn-primary text-sm">
+              <Link
+                to={`/learn/${courseId}/lessons/${nextLesson.id}`}
+                className="btn-primary text-sm"
+              >
                 Next <ChevronRight className="h-4 w-4" />
               </Link>
             ) : (

@@ -10,7 +10,11 @@ const variants = {
   info: { cls: 'bg-blue-50 border-blue-200 text-blue-800', Icon: Info },
 };
 
-interface AlertProps { variant?: Variant; message: string | string[]; className?: string; }
+interface AlertProps {
+  variant?: Variant;
+  message: string | string[];
+  className?: string;
+}
 
 export function Alert({ variant = 'error', message, className }: AlertProps) {
   const { cls, Icon } = variants[variant];
@@ -19,7 +23,9 @@ export function Alert({ variant = 'error', message, className }: AlertProps) {
     <div className={clsx('flex gap-3 rounded-lg border p-3 text-sm', cls, className)}>
       <Icon className="mt-0.5 h-4 w-4 shrink-0" />
       <div className="flex flex-col gap-1">
-        {messages.map((m, i) => <p key={i}>{m}</p>)}
+        {messages.map((m, i) => (
+          <p key={i}>{m}</p>
+        ))}
       </div>
     </div>
   );

@@ -5,10 +5,10 @@
 ## Prerequisites
 
 | Requirement | Version |
-|-------------|---------|
-| Node.js | 20+ |
-| npm | 10+ |
-| PostgreSQL | 16 |
+| ----------- | ------- |
+| Node.js     | 20+     |
+| npm         | 10+     |
+| PostgreSQL  | 16      |
 
 ---
 
@@ -70,6 +70,7 @@ npx prisma migrate deploy
 `migrate deploy` applies all pending migrations without interactive prompts, safe for CI/CD.
 
 To generate the Prisma client after a schema change (usually done during build):
+
 ```bash
 cd apps/api
 npx prisma generate
@@ -87,6 +88,7 @@ NODE_ENV=production node dist/main.js
 The API listens on `0.0.0.0:$PORT` (default 3001).
 
 Using a process manager (recommended):
+
 ```bash
 npm install -g pm2
 pm2 start apps/api/dist/main.js --name learnsphere-api --env production
@@ -101,6 +103,7 @@ pm2 startup
 The Vite build outputs static files to `apps/web/dist`. Serve them with any static file server or your reverse proxy.
 
 With `serve`:
+
 ```bash
 npm install -g serve
 serve -s apps/web/dist -l 3000
@@ -166,6 +169,7 @@ docker compose down
 ```
 
 Development connection string:
+
 ```
 postgresql://learnsphere:learnsphere_dev_password@localhost:5432/learnsphere_dev
 ```

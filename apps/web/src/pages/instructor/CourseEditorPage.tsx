@@ -37,34 +37,51 @@ export function CourseEditorPage() {
     queryFn: categoriesApi.list,
   });
 
-  const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormData>({
     resolver: zodResolver(schema),
-    values: course ? {
-      title: course.title,
-      description: course.description,
-      shortDescription: course.shortDescription ?? '',
-      difficulty: course.difficulty,
-      categoryId: course.categoryId ?? '',
-      objectives: course.objectives.join('\n'),
-      thumbnailUrl: course.thumbnailUrl ?? '',
-    } : undefined,
+    values: course
+      ? {
+          title: course.title,
+          description: course.description,
+          shortDescription: course.shortDescription ?? '',
+          difficulty: course.difficulty,
+          categoryId: course.categoryId ?? '',
+          objectives: course.objectives.join('\n'),
+          thumbnailUrl: course.thumbnailUrl ?? '',
+        }
+      : undefined,
     defaultValues: { difficulty: 'BEGINNER' },
   });
 
   const create = useMutation({
     mutationFn: (data: any) => coursesApi.create(data),
-    onSuccess: (c) => { qc.invalidateQueries({ queryKey: ['my-courses'] }); navigate(`/instructor/courses/${c.id}/edit`); },
+    onSuccess: (c) => {
+      qc.invalidateQueries({ queryKey: ['my-courses'] });
+      navigate(`/instructor/courses/${c.id}/edit`);
+    },
   });
 
   const update = useMutation({
     mutationFn: (data: any) => coursesApi.update(courseId!, data),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['my-courses'] }); qc.invalidateQueries({ queryKey: ['course', courseId] }); },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['my-courses'] });
+      qc.invalidateQueries({ queryKey: ['course', courseId] });
+    },
   });
 
   const onSubmit = (data: FormData) => {
     const payload = {
       ...data,
-      objectives: data.objectives ? data.objectives.split('\n').map((s) => s.trim()).filter(Boolean) : [],
+      objectives: data.objectives
+        ? data.objectives
+            .split('\n')
+            .map((s) => s.trim())
+            .filter(Boolean)
+        : [],
       categoryId: data.categoryId || undefined,
       thumbnailUrl: data.thumbnailUrl || undefined,
     };
@@ -73,7 +90,9 @@ export function CourseEditorPage() {
   };
 
   const mutation = isEdit ? update : create;
-  const errorMsg = mutation.error ? (mutation.error as any)?.response?.data?.message ?? 'Save failed' : null;
+  const errorMsg = mutation.error
+    ? ((mutation.error as any)?.response?.data?.message ?? 'Save failed')
+    : null;
 
   if (isEdit && courseLoading) return <PageSpinner />;
 
@@ -83,27 +102,45 @@ export function CourseEditorPage() {
         <ArrowLeft className="h-4 w-4" /> Back
       </button>
 
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">{isEdit ? 'Edit Course' : 'Create Course'}</h1>
+      <h1 className="text-2xl font-bold text-gray-900 mb-6">
+        {isEdit ? 'Edit Course' : 'Create Course'}
+      </h1>
 
       {errorMsg && <Alert message={errorMsg} className="mb-4" />}
-      {mutation.isSuccess && isEdit && <Alert variant="success" message="Course saved!" className="mb-4" />}
+      {mutation.isSuccess && isEdit && (
+        <Alert variant="success" message="Course saved!" className="mb-4" />
+      )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         <div>
           <label className="label">Course Title *</label>
-          <input className="input" placeholder="e.g. Complete React Development Bootcamp" {...register('title')} />
+          <input
+            className="input"
+            placeholder="e.g. Complete React Development Bootcamp"
+            {...register('title')}
+          />
           {errors.title && <p className="text-xs text-red-600 mt-1">{errors.title.message}</p>}
         </div>
 
         <div>
           <label className="label">Short Description</label>
-          <input className="input" placeholder="A brief summary (shown in cards)" {...register('shortDescription')} />
+          <input
+            className="input"
+            placeholder="A brief summary (shown in cards)"
+            {...register('shortDescription')}
+          />
         </div>
 
         <div>
           <label className="label">Full Description *</label>
-          <textarea className="input min-h-32 resize-y" placeholder="Describe what students will learn..." {...register('description')} />
-          {errors.description && <p className="text-xs text-red-600 mt-1">{errors.description.message}</p>}
+          <textarea
+            className="input min-h-32 resize-y"
+            placeholder="Describe what students will learn..."
+            {...register('description')}
+          />
+          {errors.description && (
+            <p className="text-xs text-red-600 mt-1">{errors.description.message}</p>
+          )}
         </div>
 
         <div className="grid sm:grid-cols-2 gap-4">
@@ -120,7 +157,9 @@ export function CourseEditorPage() {
             <select className="input" {...register('categoryId')}>
               <option value="">No category</option>
               {categories?.map((c) => (
-                <option key={c.id} value={c.id}>{c.name}</option>
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
               ))}
             </select>
           </div>
@@ -138,7 +177,9 @@ export function CourseEditorPage() {
         <div>
           <label className="label">Thumbnail URL</label>
           <input className="input" placeholder="https://..." {...register('thumbnailUrl')} />
-          {errors.thumbnailUrl && <p className="text-xs text-red-600 mt-1">{errors.thumbnailUrl.message}</p>}
+          {errors.thumbnailUrl && (
+            <p className="text-xs text-red-600 mt-1">{errors.thumbnailUrl.message}</p>
+          )}
         </div>
 
         <div className="flex gap-3 pt-2">

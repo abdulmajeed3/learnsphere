@@ -8,17 +8,24 @@ export function HomePage() {
       <section className="bg-gradient-to-br from-primary-700 to-primary-900 py-20 text-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl sm:text-5xl font-bold mb-6 leading-tight">
-            Learn anything, <br />at your own pace
+            Learn anything, <br />
+            at your own pace
           </h1>
           <p className="text-lg text-primary-200 mb-8 max-w-2xl mx-auto">
-            LearnSphere connects students with expert instructors. Explore thousands of courses
-            and build real skills that advance your career.
+            LearnSphere connects students with expert instructors. Explore thousands of courses and
+            build real skills that advance your career.
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
-            <Link to="/courses" className="bg-white text-primary-700 font-semibold px-6 py-3 rounded-lg hover:bg-primary-50 transition-colors flex items-center gap-2">
+            <Link
+              to="/courses"
+              className="bg-white text-primary-700 font-semibold px-6 py-3 rounded-lg hover:bg-primary-50 transition-colors flex items-center gap-2"
+            >
               Browse Courses <ArrowRight className="h-4 w-4" />
             </Link>
-            <Link to="/register" className="border border-white/30 text-white font-semibold px-6 py-3 rounded-lg hover:bg-white/10 transition-colors">
+            <Link
+              to="/register"
+              className="border border-white/30 text-white font-semibold px-6 py-3 rounded-lg hover:bg-white/10 transition-colors"
+            >
               Start Teaching
             </Link>
           </div>
@@ -30,9 +37,21 @@ export function HomePage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-3 gap-8">
             {[
-              { icon: BookOpen, title: 'Quality Courses', desc: 'Expert-crafted courses with text and video lessons.' },
-              { icon: Users, title: 'Great Instructors', desc: 'Learn from experienced professionals in their fields.' },
-              { icon: Award, title: 'Track Progress', desc: 'Monitor your progress and complete quizzes as you learn.' },
+              {
+                icon: BookOpen,
+                title: 'Quality Courses',
+                desc: 'Expert-crafted courses with text and video lessons.',
+              },
+              {
+                icon: Users,
+                title: 'Great Instructors',
+                desc: 'Learn from experienced professionals in their fields.',
+              },
+              {
+                icon: Award,
+                title: 'Track Progress',
+                desc: 'Monitor your progress and complete quizzes as you learn.',
+              },
             ].map(({ icon: Icon, title, desc }) => (
               <div key={title} className="text-center p-6">
                 <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary-100">

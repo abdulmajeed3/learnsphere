@@ -8,7 +8,12 @@ import * as argon2 from 'argon2';
 
 const mockPrisma = {
   user: { findUnique: jest.fn(), create: jest.fn() },
-  refreshToken: { create: jest.fn(), findUnique: jest.fn(), update: jest.fn(), updateMany: jest.fn() },
+  refreshToken: {
+    create: jest.fn(),
+    findUnique: jest.fn(),
+    update: jest.fn(),
+    updateMany: jest.fn(),
+  },
 };
 
 describe('AuthService', () => {
@@ -19,7 +24,10 @@ describe('AuthService', () => {
       providers: [
         AuthService,
         { provide: PrismaService, useValue: mockPrisma },
-        { provide: JwtService, useValue: { sign: jest.fn().mockReturnValue('token'), verify: jest.fn() } },
+        {
+          provide: JwtService,
+          useValue: { sign: jest.fn().mockReturnValue('token'), verify: jest.fn() },
+        },
         { provide: ConfigService, useValue: { get: jest.fn().mockReturnValue('secret') } },
       ],
     }).compile();
@@ -31,29 +39,54 @@ describe('AuthService', () => {
   describe('register', () => {
     it('should register a new user', async () => {
       mockPrisma.user.findUnique.mockResolvedValue(null);
-      mockPrisma.user.create.mockResolvedValue({ id: '1', email: 'test@test.com', name: 'Test', role: 'STUDENT', passwordHash: 'hash', bio: null, avatarUrl: null, createdAt: new Date(), updatedAt: new Date() });
+      mockPrisma.user.create.mockResolvedValue({
+        id: '1',
+        email: 'test@test.com',
+        name: 'Test',
+        role: 'STUDENT',
+        passwordHash: 'hash',
+        bio: null,
+        avatarUrl: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
       mockPrisma.refreshToken.create.mockResolvedValue({});
 
-      const result = await service.register({ email: 'test@test.com', name: 'Test', password: 'password123' });
+      const result = await service.register({
+        email: 'test@test.com',
+        name: 'Test',
+        password: 'password123',
+      });
       expect(result.user.email).toBe('test@test.com');
       expect(result.user).not.toHaveProperty('passwordHash');
     });
 
     it('should throw ConflictException if email exists', async () => {
       mockPrisma.user.findUnique.mockResolvedValue({ id: '1' });
-      await expect(service.register({ email: 'test@test.com', name: 'Test', password: 'pass' })).rejects.toThrow(ConflictException);
+      await expect(
+        service.register({ email: 'test@test.com', name: 'Test', password: 'pass' }),
+      ).rejects.toThrow(ConflictException);
     });
   });
 
   describe('login', () => {
     it('should throw UnauthorizedException for unknown email', async () => {
       mockPrisma.user.findUnique.mockResolvedValue(null);
-      await expect(service.login({ email: 'bad@test.com', password: 'pass' })).rejects.toThrow(UnauthorizedException);
+      await expect(service.login({ email: 'bad@test.com', password: 'pass' })).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
 
     it('should throw UnauthorizedException for wrong password', async () => {
-      mockPrisma.user.findUnique.mockResolvedValue({ id: '1', passwordHash: await argon2.hash('correctpass'), role: 'STUDENT', email: 'a@a.com' });
-      await expect(service.login({ email: 'a@a.com', password: 'wrongpass' })).rejects.toThrow(UnauthorizedException);
+      mockPrisma.user.findUnique.mockResolvedValue({
+        id: '1',
+        passwordHash: await argon2.hash('correctpass'),
+        role: 'STUDENT',
+        email: 'a@a.com',
+      });
+      await expect(service.login({ email: 'a@a.com', password: 'wrongpass' })).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
   });
 });

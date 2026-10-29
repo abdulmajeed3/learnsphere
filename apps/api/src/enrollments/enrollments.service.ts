@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, ConflictException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { EnrollDto } from './dto/enroll.dto';
 import { CourseStatus } from '@prisma/client';
@@ -10,7 +15,8 @@ export class EnrollmentsService {
   async enroll(studentId: string, dto: EnrollDto) {
     const course = await this.prisma.course.findUnique({ where: { id: dto.courseId } });
     if (!course) throw new NotFoundException('Course not found');
-    if (course.status !== CourseStatus.PUBLISHED) throw new BadRequestException('Cannot enroll in unpublished course');
+    if (course.status !== CourseStatus.PUBLISHED)
+      throw new BadRequestException('Cannot enroll in unpublished course');
 
     const existing = await this.prisma.enrollment.findUnique({
       where: { studentId_courseId: { studentId, courseId: dto.courseId } },
@@ -19,7 +25,9 @@ export class EnrollmentsService {
 
     return this.prisma.enrollment.create({
       data: { studentId, courseId: dto.courseId },
-      include: { course: { include: { instructor: { select: { id: true, name: true } }, category: true } } },
+      include: {
+        course: { include: { instructor: { select: { id: true, name: true } }, category: true } },
+      },
     });
   }
 

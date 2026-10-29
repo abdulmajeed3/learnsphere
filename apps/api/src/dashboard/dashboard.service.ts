@@ -39,7 +39,9 @@ export class DashboardService {
 
     const recentAttempts = await this.prisma.quizAttempt.findMany({
       where: { studentId },
-      include: { quiz: { select: { title: true, courseId: true, course: { select: { title: true } } } } },
+      include: {
+        quiz: { select: { title: true, courseId: true, course: { select: { title: true } } } },
+      },
       orderBy: { submittedAt: 'desc' },
       take: 5,
     });
@@ -77,7 +79,9 @@ export class DashboardService {
     const published = courses.filter((c) => c.status === 'PUBLISHED');
     const draft = courses.filter((c) => c.status === 'DRAFT');
     const totalEnrollments = courses.reduce((sum, c) => sum + c._count.enrollments, 0);
-    const totalQuizAttempts = courses.flatMap((c) => c.quizzes).reduce((sum, q) => sum + q._count.attempts, 0);
+    const totalQuizAttempts = courses
+      .flatMap((c) => c.quizzes)
+      .reduce((sum, q) => sum + q._count.attempts, 0);
 
     return {
       totalCourses: courses.length,

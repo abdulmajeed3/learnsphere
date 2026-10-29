@@ -20,17 +20,26 @@ export function LoginPage() {
   const login = useLogin();
 
   if (isAuthenticated) {
-    return <Navigate to={user?.role === 'INSTRUCTOR' ? '/instructor/dashboard' : '/student/dashboard'} replace />;
+    return (
+      <Navigate
+        to={user?.role === 'INSTRUCTOR' ? '/instructor/dashboard' : '/student/dashboard'}
+        replace
+      />
+    );
   }
 
-  const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
 
   const onSubmit = (data: FormData) => login.mutate(data);
 
   const errorMsg = login.error
-    ? (login.error as any)?.response?.data?.message ?? 'Login failed'
+    ? ((login.error as any)?.response?.data?.message ?? 'Login failed')
     : null;
 
   return (
@@ -47,7 +56,9 @@ export function LoginPage() {
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>
-              <label className="label" htmlFor="email">Email</label>
+              <label className="label" htmlFor="email">
+                Email
+              </label>
               <input
                 id="email"
                 type="email"
@@ -60,7 +71,9 @@ export function LoginPage() {
             </div>
 
             <div>
-              <label className="label" htmlFor="password">Password</label>
+              <label className="label" htmlFor="password">
+                Password
+              </label>
               <input
                 id="password"
                 type="password"
@@ -69,10 +82,16 @@ export function LoginPage() {
                 placeholder="••••••••"
                 {...register('password')}
               />
-              {errors.password && <p className="mt-1 text-xs text-red-600">{errors.password.message}</p>}
+              {errors.password && (
+                <p className="mt-1 text-xs text-red-600">{errors.password.message}</p>
+              )}
             </div>
 
-            <button type="submit" disabled={login.isPending} className="btn-primary w-full py-2.5 mt-2">
+            <button
+              type="submit"
+              disabled={login.isPending}
+              className="btn-primary w-full py-2.5 mt-2"
+            >
               {login.isPending ? <Spinner size="sm" /> : 'Sign In'}
             </button>
           </form>
@@ -85,8 +104,10 @@ export function LoginPage() {
           </div>
 
           <div className="mt-4 rounded-lg bg-blue-50 p-3 text-xs text-blue-700">
-            <strong>Demo accounts:</strong><br />
-            Student: student@learnsphere.dev / password123<br />
+            <strong>Demo accounts:</strong>
+            <br />
+            Student: student@learnsphere.dev / password123
+            <br />
             Instructor: instructor@learnsphere.dev / password123
           </div>
         </div>

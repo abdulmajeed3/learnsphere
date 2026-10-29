@@ -21,14 +21,14 @@ A professional, full-stack Learning Management System (LMS) built with NestJS an
 
 ## Technology Stack
 
-| Layer | Technology |
-|-------|------------|
+| Layer    | Technology                                                                                |
+| -------- | ----------------------------------------------------------------------------------------- |
 | Frontend | React 18, TypeScript, Vite, Tailwind CSS, TanStack Query, React Hook Form + Zod, Recharts |
-| Backend | NestJS 10 + Fastify adapter, TypeScript, Prisma ORM |
-| Database | PostgreSQL 16 |
-| Auth | Passport JWT, argon2id, refresh-token rotation |
-| Testing | Vitest + RTL (frontend), Jest (backend) |
-| CI | GitHub Actions |
+| Backend  | NestJS 10 + Fastify adapter, TypeScript, Prisma ORM                                       |
+| Database | PostgreSQL 16                                                                             |
+| Auth     | Passport JWT, argon2id, refresh-token rotation                                            |
+| Testing  | Vitest + RTL (frontend), Jest (backend)                                                   |
+| CI       | GitHub Actions                                                                            |
 
 ## Architecture
 
@@ -65,6 +65,7 @@ npm install
 ### 2. Start PostgreSQL
 
 **With Docker (recommended):**
+
 ```bash
 docker-compose up -d postgres
 ```
@@ -78,6 +79,7 @@ cp apps/api/.env.example apps/api/.env
 ```
 
 Edit `apps/api/.env` and set at minimum:
+
 ```
 DATABASE_URL="postgresql://learnsphere:learnsphere_dev_password@localhost:5432/learnsphere_dev"
 JWT_ACCESS_SECRET="your-min-32-char-secret"
@@ -111,22 +113,22 @@ npm run dev:web           # Frontend on http://localhost:5173
 
 ### API (`apps/api/.env`)
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `DATABASE_URL` | PostgreSQL connection string | required |
-| `JWT_ACCESS_SECRET` | Secret for access tokens (min 32 chars) | required |
-| `JWT_ACCESS_EXPIRES_IN` | Access token lifetime | `15m` |
-| `JWT_REFRESH_SECRET` | Secret for refresh tokens (min 32 chars) | required |
-| `JWT_REFRESH_EXPIRES_IN` | Refresh token lifetime | `7d` |
-| `PORT` | API port | `3001` |
-| `NODE_ENV` | Environment | `development` |
-| `FRONTEND_URL` | CORS origin | `http://localhost:5173` |
-| `COOKIE_SECRET` | Cookie signing secret (min 32 chars) | required |
+| Variable                 | Description                              | Default                 |
+| ------------------------ | ---------------------------------------- | ----------------------- |
+| `DATABASE_URL`           | PostgreSQL connection string             | required                |
+| `JWT_ACCESS_SECRET`      | Secret for access tokens (min 32 chars)  | required                |
+| `JWT_ACCESS_EXPIRES_IN`  | Access token lifetime                    | `15m`                   |
+| `JWT_REFRESH_SECRET`     | Secret for refresh tokens (min 32 chars) | required                |
+| `JWT_REFRESH_EXPIRES_IN` | Refresh token lifetime                   | `7d`                    |
+| `PORT`                   | API port                                 | `3001`                  |
+| `NODE_ENV`               | Environment                              | `development`           |
+| `FRONTEND_URL`           | CORS origin                              | `http://localhost:5173` |
+| `COOKIE_SECRET`          | Cookie signing secret (min 32 chars)     | required                |
 
 ### Frontend (`apps/web/.env`)
 
-| Variable | Description | Default |
-|----------|-------------|---------|
+| Variable       | Description  | Default                        |
+| -------------- | ------------ | ------------------------------ |
 | `VITE_API_URL` | API base URL | `http://localhost:3001/api/v1` |
 
 ## Database Setup
@@ -171,12 +173,12 @@ When the API is running: **http://localhost:3001/api/docs**
 
 After running `npm run db:seed`:
 
-| Role | Email | Password |
-|------|-------|----------|
-| Student | `student@learnsphere.dev` | `password123` |
-| Student | `bob@learnsphere.dev` | `password123` |
+| Role       | Email                        | Password      |
+| ---------- | ---------------------------- | ------------- |
+| Student    | `student@learnsphere.dev`    | `password123` |
+| Student    | `bob@learnsphere.dev`        | `password123` |
 | Instructor | `instructor@learnsphere.dev` | `password123` |
-| Instructor | `jane@learnsphere.dev` | `password123` |
+| Instructor | `jane@learnsphere.dev`       | `password123` |
 
 ## Roles and Authorization
 
@@ -247,4 +249,3 @@ This project is published for reference and portfolio evaluation and is not open
 Copyright (c) 2026 Abdul Majeed. All rights reserved.
 
 This project is published under a custom **Reference-Only Source-Available License**. It is **not** an open-source license. See [LICENSE](LICENSE). Deployment, commercial use, modification and redistribution require prior written authorization. Permission requests: majeed.developer0@gmail.com
-

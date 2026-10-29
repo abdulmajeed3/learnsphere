@@ -16,10 +16,30 @@ export function InstructorDashboard() {
   if (isLoading) return <PageSpinner />;
 
   const stats = [
-    { label: 'Total Courses', value: data?.totalCourses ?? 0, icon: BookOpen, color: 'text-blue-600 bg-blue-100' },
-    { label: 'Published', value: data?.publishedCourses ?? 0, icon: Eye, color: 'text-green-600 bg-green-100' },
-    { label: 'Draft', value: data?.draftCourses ?? 0, icon: EyeOff, color: 'text-yellow-600 bg-yellow-100' },
-    { label: 'Total Students', value: data?.totalEnrollments ?? 0, icon: Users, color: 'text-purple-600 bg-purple-100' },
+    {
+      label: 'Total Courses',
+      value: data?.totalCourses ?? 0,
+      icon: BookOpen,
+      color: 'text-blue-600 bg-blue-100',
+    },
+    {
+      label: 'Published',
+      value: data?.publishedCourses ?? 0,
+      icon: Eye,
+      color: 'text-green-600 bg-green-100',
+    },
+    {
+      label: 'Draft',
+      value: data?.draftCourses ?? 0,
+      icon: EyeOff,
+      color: 'text-yellow-600 bg-yellow-100',
+    },
+    {
+      label: 'Total Students',
+      value: data?.totalEnrollments ?? 0,
+      icon: Users,
+      color: 'text-purple-600 bg-purple-100',
+    },
   ];
 
   return (
@@ -52,7 +72,10 @@ export function InstructorDashboard() {
       {/* Courses */}
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold text-gray-900">Your Courses</h2>
-        <Link to="/instructor/courses" className="text-sm text-primary-600 hover:text-primary-700 flex items-center gap-1">
+        <Link
+          to="/instructor/courses"
+          className="text-sm text-primary-600 hover:text-primary-700 flex items-center gap-1"
+        >
           View all <ArrowRight className="h-3.5 w-3.5" />
         </Link>
       </div>
@@ -61,7 +84,11 @@ export function InstructorDashboard() {
         <EmptyState
           title="No courses yet"
           description="Create your first course and start teaching."
-          action={<Link to="/instructor/courses/new" className="btn-primary">Create Course</Link>}
+          action={
+            <Link to="/instructor/courses/new" className="btn-primary">
+              Create Course
+            </Link>
+          }
         />
       ) : (
         <div className="card overflow-hidden">
@@ -90,7 +117,9 @@ export function InstructorDashboard() {
                   <td className="px-4 py-3 text-center text-gray-600">{c.enrollmentCount}</td>
                   <td className="px-4 py-3 text-center text-gray-600">{c.lessonCount}</td>
                   <td className="px-4 py-3 text-right">
-                    <Link to={`/instructor/courses/${c.id}/edit`} className="btn-ghost text-xs">Edit</Link>
+                    <Link to={`/instructor/courses/${c.id}/edit`} className="btn-ghost text-xs">
+                      Edit
+                    </Link>
                   </td>
                 </tr>
               ))}

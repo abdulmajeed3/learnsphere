@@ -13,10 +13,7 @@ describe('EnrollmentsService', () => {
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
-      providers: [
-        EnrollmentsService,
-        { provide: PrismaService, useValue: mockPrisma },
-      ],
+      providers: [EnrollmentsService, { provide: PrismaService, useValue: mockPrisma }],
     }).compile();
     service = module.get<EnrollmentsService>(EnrollmentsService);
     jest.clearAllMocks();
@@ -29,7 +26,9 @@ describe('EnrollmentsService', () => {
 
   it('should throw BadRequestException for draft course', async () => {
     mockPrisma.course.findUnique.mockResolvedValue({ id: 'c1', status: 'DRAFT' });
-    await expect(service.enroll('student1', { courseId: 'c1' })).rejects.toThrow(BadRequestException);
+    await expect(service.enroll('student1', { courseId: 'c1' })).rejects.toThrow(
+      BadRequestException,
+    );
   });
 
   it('should throw ConflictException for duplicate enrollment', async () => {

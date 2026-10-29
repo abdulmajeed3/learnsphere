@@ -2,10 +2,10 @@
 
 ## Test Summary
 
-| Workspace | Test files | Tests | Framework | Status |
-|-----------|-----------|-------|-----------|--------|
-| `apps/api` | 3 | 8 | Jest | PASS |
-| `apps/web` | 2 | 5 | Vitest | PASS |
+| Workspace  | Test files | Tests | Framework | Status |
+| ---------- | ---------- | ----- | --------- | ------ |
+| `apps/api` | 3          | 8     | Jest      | PASS   |
+| `apps/web` | 2          | 5     | Vitest    | PASS   |
 
 ---
 
@@ -13,11 +13,11 @@
 
 Test files live alongside source files:
 
-| File | Tests | Coverage area |
-|------|-------|--------------|
-| `src/auth/auth.service.spec.ts` | 3 | Register, login, token refresh logic |
-| `src/enrollments/enrollments.service.spec.ts` | 3 | Enroll, duplicate check, list enrollments |
-| `src/progress/progress.service.spec.ts` | 2 | Mark complete, unmark complete |
+| File                                          | Tests | Coverage area                             |
+| --------------------------------------------- | ----- | ----------------------------------------- |
+| `src/auth/auth.service.spec.ts`               | 3     | Register, login, token refresh logic      |
+| `src/enrollments/enrollments.service.spec.ts` | 3     | Enroll, duplicate check, list enrollments |
+| `src/progress/progress.service.spec.ts`       | 2     | Mark complete, unmark complete            |
 
 All three spec files use Jest with mocked `PrismaService` — no real database connection is required to run the unit tests.
 
@@ -39,10 +39,10 @@ npx jest --watch
 
 Test files are in `src/test/`:
 
-| File | Tests | Coverage area |
-|------|-------|--------------|
-| `src/test/LoginPage.test.tsx` | 2 | Form rendering, submit with credentials |
-| `src/test/CourseCatalog.test.tsx` | 3 | Course list rendering, filter by category, empty state |
+| File                              | Tests | Coverage area                                          |
+| --------------------------------- | ----- | ------------------------------------------------------ |
+| `src/test/LoginPage.test.tsx`     | 2     | Form rendering, submit with credentials                |
+| `src/test/CourseCatalog.test.tsx` | 3     | Course list rendering, filter by category, empty state |
 
 Uses Vitest + React Testing Library.
 
@@ -85,6 +85,7 @@ postgres_test:
 ```
 
 For integration or E2E tests that require a real database, set:
+
 ```env
 DATABASE_URL=postgresql://learnsphere:learnsphere_test_password@localhost:5433/learnsphere_test
 ```

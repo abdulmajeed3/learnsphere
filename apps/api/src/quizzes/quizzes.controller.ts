@@ -34,7 +34,11 @@ export class QuizzesController {
   @UseGuards(RolesGuard)
   @Roles('INSTRUCTOR')
   @ApiOperation({ summary: 'Create a quiz' })
-  create(@Param('courseId') courseId: string, @CurrentUser() user: any, @Body() dto: CreateQuizDto) {
+  create(
+    @Param('courseId') courseId: string,
+    @CurrentUser() user: any,
+    @Body() dto: CreateQuizDto,
+  ) {
     return this.quizzesService.create(user.id, courseId, dto);
   }
 
@@ -58,7 +62,11 @@ export class QuizzesController {
   @UseGuards(RolesGuard)
   @Roles('INSTRUCTOR')
   @ApiOperation({ summary: 'Add question to quiz' })
-  addQuestion(@Param('quizId') quizId: string, @CurrentUser() user: any, @Body() dto: CreateQuestionDto) {
+  addQuestion(
+    @Param('quizId') quizId: string,
+    @CurrentUser() user: any,
+    @Body() dto: CreateQuestionDto,
+  ) {
     return this.quizzesService.addQuestion(quizId, user.id, dto);
   }
 
@@ -66,7 +74,12 @@ export class QuizzesController {
   @UseGuards(RolesGuard)
   @Roles('INSTRUCTOR')
   @ApiOperation({ summary: 'Update question' })
-  updateQuestion(@Param('quizId') quizId: string, @Param('questionId') questionId: string, @CurrentUser() user: any, @Body() dto: UpdateQuestionDto) {
+  updateQuestion(
+    @Param('quizId') quizId: string,
+    @Param('questionId') questionId: string,
+    @CurrentUser() user: any,
+    @Body() dto: UpdateQuestionDto,
+  ) {
     return this.quizzesService.updateQuestion(quizId, questionId, user.id, dto);
   }
 
@@ -74,7 +87,11 @@ export class QuizzesController {
   @UseGuards(RolesGuard)
   @Roles('INSTRUCTOR')
   @ApiOperation({ summary: 'Delete question' })
-  deleteQuestion(@Param('quizId') quizId: string, @Param('questionId') questionId: string, @CurrentUser() user: any) {
+  deleteQuestion(
+    @Param('quizId') quizId: string,
+    @Param('questionId') questionId: string,
+    @CurrentUser() user: any,
+  ) {
     return this.quizzesService.deleteQuestion(quizId, questionId, user.id);
   }
 
@@ -82,7 +99,11 @@ export class QuizzesController {
   @UseGuards(RolesGuard)
   @Roles('STUDENT')
   @ApiOperation({ summary: 'Submit quiz attempt' })
-  submitAttempt(@Param('quizId') quizId: string, @CurrentUser() user: any, @Body() dto: SubmitAttemptDto) {
+  submitAttempt(
+    @Param('quizId') quizId: string,
+    @CurrentUser() user: any,
+    @Body() dto: SubmitAttemptDto,
+  ) {
     return this.quizzesService.submitAttempt(quizId, user.id, dto);
   }
 
