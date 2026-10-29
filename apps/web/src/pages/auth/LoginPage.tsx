@@ -19,15 +19,6 @@ export function LoginPage() {
   const { isAuthenticated, user } = useAuthStore();
   const login = useLogin();
 
-  if (isAuthenticated) {
-    return (
-      <Navigate
-        to={user?.role === 'INSTRUCTOR' ? '/instructor/dashboard' : '/student/dashboard'}
-        replace
-      />
-    );
-  }
-
   const {
     register,
     handleSubmit,
@@ -41,6 +32,15 @@ export function LoginPage() {
   const errorMsg = login.error
     ? ((login.error as any)?.response?.data?.message ?? 'Login failed')
     : null;
+
+  if (isAuthenticated) {
+    return (
+      <Navigate
+        to={user?.role === 'INSTRUCTOR' ? '/instructor/dashboard' : '/student/dashboard'}
+        replace
+      />
+    );
+  }
 
   return (
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 py-12">

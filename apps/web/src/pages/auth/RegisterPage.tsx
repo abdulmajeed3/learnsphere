@@ -20,15 +20,6 @@ export function RegisterPage() {
   const { isAuthenticated, user } = useAuthStore();
   const register_ = useRegister();
 
-  if (isAuthenticated) {
-    return (
-      <Navigate
-        to={user?.role === 'INSTRUCTOR' ? '/instructor/dashboard' : '/student/dashboard'}
-        replace
-      />
-    );
-  }
-
   const {
     register,
     handleSubmit,
@@ -43,6 +34,15 @@ export function RegisterPage() {
   const errorMsg = register_.error
     ? ((register_.error as any)?.response?.data?.message ?? 'Registration failed')
     : null;
+
+  if (isAuthenticated) {
+    return (
+      <Navigate
+        to={user?.role === 'INSTRUCTOR' ? '/instructor/dashboard' : '/student/dashboard'}
+        replace
+      />
+    );
+  }
 
   return (
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 py-12">
