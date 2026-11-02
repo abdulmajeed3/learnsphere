@@ -39,10 +39,12 @@ model User {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  courses       Course[]
-  enrollments   Enrollment[]
-  quizAttempts  QuizAttempt[]
-  refreshTokens RefreshToken[]
+  courses        Course[]
+  enrollments    Enrollment[]
+  quizAttempts   QuizAttempt[]
+  refreshTokens  RefreshToken[]
+  bookmarks      CourseBookmark[]
+  lessonNotes    LessonNote[]
 
   @@index([email])
 }
@@ -79,6 +81,7 @@ model Course {
   lessons     Lesson[]
   enrollments Enrollment[]
   quizzes     Quiz[]
+  bookmarks   CourseBookmark[]
 
   @@index([status])
   @@index([instructorId])
@@ -101,6 +104,7 @@ model Lesson {
 
   progress LessonProgress[]
   quizzes  Quiz[]
+  notes    LessonNote[]
 
   @@unique([courseId, order])
   @@index([courseId])
@@ -223,4 +227,33 @@ model QuizAttemptAnswer {
   question         QuizQuestion @relation(fields: [questionId], references: [id])
   selectedOptionId String?
   selectedOption   QuizOption?  @relation(fields: [selectedOptionId], references: [id])
+}
+
+model CourseBookmark {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  studentId String
+  student   User   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  courseId  String
+  course    Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, courseId])
+  @@index([studentId])
+}
+
+model LessonNote {
+  id        String   @id @default(uuid())
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  studentId String
+  student   User   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  lessonId  String
+  lesson    Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@index([lessonId])
+  @@index([studentId, lessonId])
 }

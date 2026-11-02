@@ -11,6 +11,8 @@ import { EnrollmentsModule } from './enrollments/enrollments.module';
 import { ProgressModule } from './progress/progress.module';
 import { QuizzesModule } from './quizzes/quizzes.module';
 import { DashboardModule } from './dashboard/dashboard.module';
+import { BookmarksModule } from './bookmarks/bookmarks.module';
+import { NotesModule } from './notes/notes.module';
 
 @Module({
   imports: [
@@ -26,6 +28,8 @@ import { DashboardModule } from './dashboard/dashboard.module';
     ProgressModule,
     QuizzesModule,
     DashboardModule,
+    BookmarksModule,
+    NotesModule,
   ],
 })
 export class AppModule {}

@@ -31,6 +31,10 @@ vi.mock('@/api/categories', () => ({
   categoriesApi: { list: vi.fn().mockResolvedValue([]) },
 }));
 
+vi.mock('@/api/bookmarks', () => ({
+  bookmarksApi: { list: vi.fn().mockResolvedValue([]) },
+}));
+
 function renderPage() {
   const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(

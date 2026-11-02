@@ -1,8 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { BookOpen, Clock, Users, CheckCircle, PlayCircle, Lock } from 'lucide-react';
+import { BookOpen, Clock, Users, CheckCircle, PlayCircle, Lock, Bookmark } from 'lucide-react';
 import { coursesApi } from '@/api/courses';
 import { enrollmentsApi } from '@/api/enrollments';
+import { bookmarksApi } from '@/api/bookmarks';
 import { PageSpinner } from '@/components/ui/Spinner';
 import { Alert } from '@/components/ui/Alert';
 import { useAuthStore } from '@/stores/authStore';
@@ -32,6 +33,20 @@ export function CourseDetailPage() {
     queryKey: ['enrollment-check', courseId],
     queryFn: () => enrollmentsApi.check(courseId!),
     enabled: isAuthenticated && user?.role === 'STUDENT',
+  });
+
+  const { data: bookmark } = useQuery({
+    queryKey: ['bookmark-check', courseId],
+    queryFn: () => bookmarksApi.check(courseId!),
+    enabled: isAuthenticated && user?.role === 'STUDENT',
+  });
+
+  const toggleBookmark = useMutation({
+    mutationFn: () => (bookmark ? bookmarksApi.remove(courseId!) : bookmarksApi.add(courseId!)),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['bookmark-check', courseId] });
+      qc.invalidateQueries({ queryKey: ['bookmarks'] });
+    },
   });
 
   const enroll = useMutation({
@@ -172,6 +187,19 @@ export function CourseDetailPage() {
               <Link to="/register" className="btn-primary w-full justify-center">
                 Sign Up to Enroll
               </Link>
+            )}
+
+            {isAuthenticated && user?.role === 'STUDENT' && (
+              <button
+                onClick={() => toggleBookmark.mutate()}
+                disabled={toggleBookmark.isPending}
+                className={`btn w-full justify-center mt-3 ${
+                  bookmark ? 'btn-secondary text-primary-600' : 'btn-ghost'
+                }`}
+              >
+                <Bookmark className={`h-4 w-4 ${bookmark ? 'fill-current' : ''}`} />
+                {bookmark ? 'Saved' : 'Save Course'}
+              </button>
             )}
           </div>
         </div>

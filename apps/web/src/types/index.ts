@@ -135,3 +135,20 @@ export interface ApiError {
   statusCode: number;
   error?: string;
 }
+
+export interface CourseBookmark {
+  id: string;
+  createdAt: string;
+  studentId: string;
+  courseId: string;
+  course: Course;
+}
+
+export interface LessonNote {
+  id: string;
+  content: string;
+  createdAt: string;
+  updatedAt: string;
+  studentId: string;
+  lessonId: string;
+}

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { BookOpen, Users, BarChart2 } from 'lucide-react';
+import { BookOpen, Users, Bookmark } from 'lucide-react';
 import type { Course } from '@/types';
 import { ProgressBar } from './ProgressBar';
 
@@ -13,13 +13,38 @@ interface CourseCardProps {
   course: Course;
   progress?: { progressPercentage: number; completedLessons: number; totalLessons: number };
   href?: string;
+  isBookmarked?: boolean;
+  onBookmarkToggle?: (e: React.MouseEvent) => void;
 }
 
-export function CourseCard({ course, progress, href }: CourseCardProps) {
+export function CourseCard({
+  course,
+  progress,
+  href,
+  isBookmarked,
+  onBookmarkToggle,
+}: CourseCardProps) {
   const link = href ?? `/courses/${course.id}`;
   return (
     <Link to={link} className="card block overflow-hidden hover:shadow-md transition-shadow group">
-      <div className="h-40 bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center">
+      <div className="relative h-40 bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center">
+        {onBookmarkToggle && (
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onBookmarkToggle(e);
+            }}
+            aria-label={isBookmarked ? 'Remove bookmark' : 'Bookmark course'}
+            className={`absolute top-2 right-2 rounded-full p-1.5 transition-colors ${
+              isBookmarked
+                ? 'bg-white/90 text-primary-600 hover:bg-white'
+                : 'bg-black/20 text-white/80 hover:bg-black/40'
+            }`}
+          >
+            <Bookmark className={`h-4 w-4 ${isBookmarked ? 'fill-current' : ''}`} />
+          </button>
+        )}
         <BookOpen className="h-12 w-12 text-white/70" />
       </div>
       <div className="p-4">

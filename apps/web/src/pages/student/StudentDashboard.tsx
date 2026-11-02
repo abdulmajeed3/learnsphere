@@ -1,7 +1,8 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
-import { BookOpen, CheckCircle, Trophy, ArrowRight } from 'lucide-react';
+import { BookOpen, CheckCircle, Trophy, ArrowRight, Bookmark } from 'lucide-react';
 import { dashboardApi } from '@/api/dashboard';
+import { bookmarksApi } from '@/api/bookmarks';
 import { PageSpinner } from '@/components/ui/Spinner';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { EmptyState } from '@/components/ui/EmptyState';
@@ -9,9 +10,21 @@ import { useAuthStore } from '@/stores/authStore';
 
 export function StudentDashboard() {
   const { user } = useAuthStore();
+  const qc = useQueryClient();
+
   const { data, isLoading } = useQuery({
     queryKey: ['student-dashboard'],
     queryFn: dashboardApi.student,
+  });
+
+  const { data: bookmarks } = useQuery({
+    queryKey: ['bookmarks'],
+    queryFn: bookmarksApi.list,
+  });
+
+  const removeBookmark = useMutation({
+    mutationFn: (courseId: string) => bookmarksApi.remove(courseId),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['bookmarks'] }),
   });
 
   if (isLoading) return <PageSpinner />;
@@ -139,6 +152,50 @@ export function StudentDashboard() {
             </div>
           )}
         </div>
+      </div>
+
+      {/* Saved Courses */}
+      <div className="mt-8">
+        <div className="flex items-center gap-2 mb-4">
+          <Bookmark className="h-5 w-5 text-primary-600" />
+          <h2 className="text-lg font-semibold text-gray-900">Saved Courses</h2>
+        </div>
+        {!bookmarks?.length ? (
+          <div className="card p-6 text-center text-sm text-gray-500">
+            No saved courses yet. Bookmark courses from the catalog to find them here.
+          </div>
+        ) : (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {bookmarks.map((b) => (
+              <div key={b.id} className="card overflow-hidden">
+                <Link
+                  to={`/courses/${b.courseId}`}
+                  className="block h-28 bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center hover:opacity-90 transition-opacity"
+                >
+                  <BookOpen className="h-10 w-10 text-white/70" />
+                </Link>
+                <div className="p-3">
+                  <Link
+                    to={`/courses/${b.courseId}`}
+                    className="block font-medium text-gray-900 hover:text-primary-700 text-sm line-clamp-2 mb-1"
+                  >
+                    {b.course.title}
+                  </Link>
+                  {b.course.instructor && (
+                    <p className="text-xs text-gray-500">by {b.course.instructor.name}</p>
+                  )}
+                  <button
+                    onClick={() => removeBookmark.mutate(b.courseId)}
+                    disabled={removeBookmark.isPending}
+                    className="mt-2 text-xs text-red-500 hover:text-red-700 flex items-center gap-1"
+                  >
+                    <Bookmark className="h-3 w-3 fill-current" /> Remove
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

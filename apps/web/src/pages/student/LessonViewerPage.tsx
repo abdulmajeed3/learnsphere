@@ -1,16 +1,34 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { CheckCircle, Circle, ChevronLeft, ChevronRight, PlayCircle, BookOpen } from 'lucide-react';
+import { useState } from 'react';
+import {
+  CheckCircle,
+  Circle,
+  ChevronLeft,
+  ChevronRight,
+  PlayCircle,
+  BookOpen,
+  StickyNote,
+  Pencil,
+  Trash2,
+  Check,
+  X,
+} from 'lucide-react';
 import { lessonsApi } from '@/api/lessons';
 import { progressApi } from '@/api/progress';
 import { coursesApi } from '@/api/courses';
+import { notesApi } from '@/api/notes';
 import { PageSpinner } from '@/components/ui/Spinner';
 import { Alert } from '@/components/ui/Alert';
+import type { LessonNote } from '@/types';
 
 export function LessonViewerPage() {
   const { courseId, lessonId } = useParams<{ courseId: string; lessonId: string }>();
   const qc = useQueryClient();
   const navigate = useNavigate();
+  const [newNote, setNewNote] = useState('');
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editContent, setEditContent] = useState('');
 
   const { data: course } = useQuery({
     queryKey: ['course', courseId],
@@ -45,6 +63,39 @@ export function LessonViewerPage() {
     mutationFn: () => progressApi.markIncomplete(lessonId!),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['course-progress', courseId] }),
   });
+
+  const { data: notes } = useQuery({
+    queryKey: ['lesson-notes', lessonId],
+    queryFn: () => notesApi.list(lessonId!),
+    enabled: !!lessonId,
+  });
+
+  const createNote = useMutation({
+    mutationFn: (content: string) => notesApi.create(lessonId!, content),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['lesson-notes', lessonId] });
+      setNewNote('');
+    },
+  });
+
+  const updateNote = useMutation({
+    mutationFn: ({ noteId, content }: { noteId: string; content: string }) =>
+      notesApi.update(noteId, content),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['lesson-notes', lessonId] });
+      setEditingId(null);
+    },
+  });
+
+  const deleteNote = useMutation({
+    mutationFn: (noteId: string) => notesApi.delete(noteId),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['lesson-notes', lessonId] }),
+  });
+
+  const startEdit = (note: LessonNote) => {
+    setEditingId(note.id);
+    setEditContent(note.content);
+  };
 
   if (isLoading) return <PageSpinner />;
   if (error || !lesson)
@@ -188,6 +239,94 @@ export function LessonViewerPage() {
               <Link to={`/courses/${courseId}`} className="btn-secondary text-sm">
                 Back to Course
               </Link>
+            )}
+          </div>
+
+          {/* Notes */}
+          <div className="mt-8">
+            <div className="flex items-center gap-2 mb-4">
+              <StickyNote className="h-5 w-5 text-primary-600" />
+              <h2 className="text-lg font-semibold text-gray-900">My Notes</h2>
+            </div>
+
+            <div className="card p-4 mb-4">
+              <textarea
+                value={newNote}
+                onChange={(e) => setNewNote(e.target.value)}
+                placeholder="Write a note for this lesson..."
+                rows={3}
+                className="input resize-none mb-2"
+              />
+              <button
+                onClick={() => newNote.trim() && createNote.mutate(newNote.trim())}
+                disabled={createNote.isPending || !newNote.trim()}
+                className="btn-primary text-sm"
+              >
+                {createNote.isPending ? 'Saving...' : 'Save Note'}
+              </button>
+            </div>
+
+            {notes?.length ? (
+              <div className="space-y-3">
+                {notes.map((note) => (
+                  <div key={note.id} className="card p-4">
+                    {editingId === note.id ? (
+                      <>
+                        <textarea
+                          value={editContent}
+                          onChange={(e) => setEditContent(e.target.value)}
+                          rows={3}
+                          className="input resize-none mb-2"
+                        />
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() =>
+                              editContent.trim() &&
+                              updateNote.mutate({ noteId: note.id, content: editContent.trim() })
+                            }
+                            disabled={updateNote.isPending}
+                            className="btn-primary text-xs"
+                          >
+                            <Check className="h-3.5 w-3.5" /> Save
+                          </button>
+                          <button
+                            onClick={() => setEditingId(null)}
+                            className="btn-secondary text-xs"
+                          >
+                            <X className="h-3.5 w-3.5" /> Cancel
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <p className="text-sm text-gray-700 whitespace-pre-wrap">{note.content}</p>
+                        <p className="mt-1 text-xs text-gray-400">
+                          {new Date(note.updatedAt).toLocaleDateString()}
+                        </p>
+                        <div className="mt-2 flex gap-2">
+                          <button
+                            onClick={() => startEdit(note)}
+                            className="btn-ghost text-xs px-2 py-1"
+                          >
+                            <Pencil className="h-3.5 w-3.5" /> Edit
+                          </button>
+                          <button
+                            onClick={() => deleteNote.mutate(note.id)}
+                            disabled={deleteNote.isPending}
+                            className="btn-ghost text-xs px-2 py-1 text-red-500 hover:bg-red-50"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" /> Delete
+                          </button>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-gray-400 text-center py-4">
+                No notes yet for this lesson.
+              </p>
             )}
           </div>
         </div>

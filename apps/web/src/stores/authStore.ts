@@ -10,10 +10,18 @@ interface AuthState {
   updateUser: (user: User) => void;
 }
 
+const safeGetItem = (key: string) => {
+  try {
+    return localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+};
+
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
-  accessToken: localStorage.getItem('access_token'),
-  isAuthenticated: !!localStorage.getItem('access_token'),
+  accessToken: safeGetItem('access_token'),
+  isAuthenticated: !!safeGetItem('access_token'),
 
   setAuth: (user, token) => {
     localStorage.setItem('access_token', token);

@@ -1,11 +1,13 @@
-import { useQuery, keepPreviousData } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { useState } from 'react';
-import { Search, Filter } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { coursesApi } from '@/api/courses';
 import { categoriesApi } from '@/api/categories';
+import { bookmarksApi } from '@/api/bookmarks';
 import { CourseCard } from '@/components/ui/CourseCard';
 import { PageSpinner } from '@/components/ui/Spinner';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { useAuthStore } from '@/stores/authStore';
 import type { Difficulty } from '@/types';
 
 const DIFFICULTIES: { value: Difficulty | ''; label: string }[] = [
@@ -20,6 +22,9 @@ export function CourseCatalogPage() {
   const [categoryId, setCategoryId] = useState('');
   const [difficulty, setDifficulty] = useState<Difficulty | ''>('');
   const [page, setPage] = useState(1);
+  const { user, isAuthenticated } = useAuthStore();
+  const qc = useQueryClient();
+  const isStudent = isAuthenticated && user?.role === 'STUDENT';
 
   const { data, isLoading } = useQuery({
     queryKey: ['courses', { search, categoryId, difficulty, page }],
@@ -37,6 +42,19 @@ export function CourseCatalogPage() {
   const { data: categories } = useQuery({
     queryKey: ['categories'],
     queryFn: categoriesApi.list,
+  });
+
+  const { data: bookmarks } = useQuery({
+    queryKey: ['bookmarks'],
+    queryFn: bookmarksApi.list,
+    enabled: isStudent,
+  });
+  const bookmarkedIds = new Set(bookmarks?.map((b) => b.courseId) ?? []);
+
+  const toggleBookmark = useMutation({
+    mutationFn: (courseId: string) =>
+      bookmarkedIds.has(courseId) ? bookmarksApi.remove(courseId) : bookmarksApi.add(courseId),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['bookmarks'] }),
   });
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
@@ -113,7 +131,12 @@ export function CourseCatalogPage() {
           </p>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {data.data.map((course) => (
-              <CourseCard key={course.id} course={course} />
+              <CourseCard
+                key={course.id}
+                course={course}
+                isBookmarked={bookmarkedIds.has(course.id)}
+                onBookmarkToggle={isStudent ? () => toggleBookmark.mutate(course.id) : undefined}
+              />
             ))}
           </div>
 
