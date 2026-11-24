@@ -152,3 +152,13 @@ export interface LessonNote {
   studentId: string;
   lessonId: string;
 }
+
+export interface Certificate {
+  id: string;
+  code: string;
+  issuedAt: string;
+  studentId: string;
+  courseId: string;
+  course: Course & { instructor?: Pick<User, 'id' | 'name'> };
+  student?: Pick<User, 'id' | 'name'>;
+}

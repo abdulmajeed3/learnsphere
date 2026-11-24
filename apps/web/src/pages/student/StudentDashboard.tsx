@@ -1,8 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
-import { BookOpen, CheckCircle, Trophy, ArrowRight, Bookmark } from 'lucide-react';
+import { BookOpen, CheckCircle, Trophy, ArrowRight, Bookmark, Award } from 'lucide-react';
 import { dashboardApi } from '@/api/dashboard';
 import { bookmarksApi } from '@/api/bookmarks';
+import { certificatesApi } from '@/api/certificates';
 import { PageSpinner } from '@/components/ui/Spinner';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { EmptyState } from '@/components/ui/EmptyState';
@@ -25,6 +26,17 @@ export function StudentDashboard() {
   const removeBookmark = useMutation({
     mutationFn: (courseId: string) => bookmarksApi.remove(courseId),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['bookmarks'] }),
+  });
+
+  const { data: certificates } = useQuery({
+    queryKey: ['my-certificates'],
+    queryFn: certificatesApi.listMine,
+  });
+  const certifiedCourseIds = new Set(certificates?.map((c) => c.courseId) ?? []);
+
+  const claimCertificate = useMutation({
+    mutationFn: (courseId: string) => certificatesApi.claim(courseId),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['my-certificates'] }),
   });
 
   if (isLoading) return <PageSpinner />;
@@ -97,30 +109,52 @@ export function StudentDashboard() {
             />
           ) : (
             <div className="space-y-3">
-              {data.courses.map((c: any) => (
-                <Link
-                  key={c.enrollmentId}
-                  to={`/courses/${c.courseId}`}
-                  className="card p-4 flex items-center gap-4 hover:shadow-md transition-shadow group"
-                >
-                  <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center shrink-0">
-                    <BookOpen className="h-6 w-6 text-white" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-gray-900 group-hover:text-primary-700 truncate">
-                      {c.courseTitle}
-                    </p>
-                    <p className="text-xs text-gray-500">{c.instructor?.name}</p>
-                    <div className="mt-2">
-                      <ProgressBar value={c.progressPercentage} size="sm" />
-                      <p className="text-xs text-gray-400 mt-0.5">
-                        {c.completedLessons}/{c.totalLessons} lessons · {c.progressPercentage}%
-                      </p>
+              {data.courses.map((c: any) => {
+                const isComplete = c.progressPercentage === 100 && c.totalLessons > 0;
+                const hasCert = certifiedCourseIds.has(c.courseId);
+                return (
+                  <div key={c.enrollmentId} className="card p-4 flex items-center gap-4">
+                    <Link
+                      to={`/courses/${c.courseId}`}
+                      className="h-12 w-12 rounded-lg bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center shrink-0 hover:opacity-90 transition-opacity"
+                    >
+                      <BookOpen className="h-6 w-6 text-white" />
+                    </Link>
+                    <div className="flex-1 min-w-0">
+                      <Link
+                        to={`/courses/${c.courseId}`}
+                        className="font-medium text-gray-900 hover:text-primary-700 truncate block"
+                      >
+                        {c.courseTitle}
+                      </Link>
+                      <p className="text-xs text-gray-500">{c.instructor?.name}</p>
+                      <div className="mt-2">
+                        <ProgressBar value={c.progressPercentage} size="sm" />
+                        <p className="text-xs text-gray-400 mt-0.5">
+                          {c.completedLessons}/{c.totalLessons} lessons · {c.progressPercentage}%
+                        </p>
+                      </div>
                     </div>
+                    {isComplete &&
+                      (hasCert ? (
+                        <Link
+                          to={`/certificates/${certificates?.find((cert) => cert.courseId === c.courseId)?.code}`}
+                          className="btn-secondary text-xs shrink-0 gap-1"
+                        >
+                          <Award className="h-3.5 w-3.5 text-yellow-500" /> Certificate
+                        </Link>
+                      ) : (
+                        <button
+                          onClick={() => claimCertificate.mutate(c.courseId)}
+                          disabled={claimCertificate.isPending}
+                          className="btn-primary text-xs shrink-0 gap-1"
+                        >
+                          <Award className="h-3.5 w-3.5" /> Claim
+                        </button>
+                      ))}
                   </div>
-                  <ArrowRight className="h-4 w-4 text-gray-400 shrink-0" />
-                </Link>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
@@ -153,6 +187,38 @@ export function StudentDashboard() {
           )}
         </div>
       </div>
+
+      {/* My Certificates */}
+      {certificates && certificates.length > 0 && (
+        <div className="mt-8">
+          <div className="flex items-center gap-2 mb-4">
+            <Award className="h-5 w-5 text-yellow-500" />
+            <h2 className="text-lg font-semibold text-gray-900">My Certificates</h2>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {certificates.map((cert) => (
+              <Link
+                key={cert.id}
+                to={`/certificates/${cert.code}`}
+                className="card p-5 hover:shadow-md transition-shadow flex items-start gap-4 group"
+              >
+                <div className="bg-yellow-100 text-yellow-600 rounded-xl p-3 shrink-0">
+                  <Award className="h-6 w-6" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-gray-900 group-hover:text-primary-700 truncate text-sm">
+                    {cert.course.title}
+                  </p>
+                  <p className="text-xs text-gray-500 mt-0.5">{cert.course.instructor?.name}</p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Issued {new Date(cert.issuedAt).toLocaleDateString()}
+                  </p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Saved Courses */}
       <div className="mt-8">

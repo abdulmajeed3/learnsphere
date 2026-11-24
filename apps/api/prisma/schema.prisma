@@ -45,6 +45,7 @@ model User {
   refreshTokens  RefreshToken[]
   bookmarks      CourseBookmark[]
   lessonNotes    LessonNote[]
+  certificates   Certificate[]
 
   @@index([email])
 }
@@ -78,10 +79,11 @@ model Course {
   categoryId   String?
   category     CourseCategory? @relation(fields: [categoryId], references: [id])
 
-  lessons     Lesson[]
-  enrollments Enrollment[]
-  quizzes     Quiz[]
-  bookmarks   CourseBookmark[]
+  lessons      Lesson[]
+  enrollments  Enrollment[]
+  quizzes      Quiz[]
+  bookmarks    CourseBookmark[]
+  certificates Certificate[]
 
   @@index([status])
   @@index([instructorId])
@@ -256,4 +258,19 @@ model LessonNote {
   @@index([studentId])
   @@index([lessonId])
   @@index([studentId, lessonId])
+}
+
+model Certificate {
+  id       String   @id @default(uuid())
+  code     String   @unique @default(uuid())
+  issuedAt DateTime @default(now())
+
+  studentId String
+  student   User   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  courseId  String
+  course    Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, courseId])
+  @@index([studentId])
+  @@index([code])
 }

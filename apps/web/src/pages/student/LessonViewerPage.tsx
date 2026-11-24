@@ -13,11 +13,13 @@ import {
   Trash2,
   Check,
   X,
+  Award,
 } from 'lucide-react';
 import { lessonsApi } from '@/api/lessons';
 import { progressApi } from '@/api/progress';
 import { coursesApi } from '@/api/courses';
 import { notesApi } from '@/api/notes';
+import { certificatesApi } from '@/api/certificates';
 import { PageSpinner } from '@/components/ui/Spinner';
 import { Alert } from '@/components/ui/Alert';
 import type { LessonNote } from '@/types';
@@ -97,6 +99,20 @@ export function LessonViewerPage() {
     setEditContent(note.content);
   };
 
+  const { data: certificate } = useQuery({
+    queryKey: ['certificate-check', courseId],
+    queryFn: () =>
+      certificatesApi
+        .listMine()
+        .then((certs) => certs.find((c) => c.courseId === courseId) ?? null),
+    enabled: !!courseId,
+  });
+
+  const claimCertificate = useMutation({
+    mutationFn: () => certificatesApi.claim(courseId!),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['certificate-check', courseId] }),
+  });
+
   if (isLoading) return <PageSpinner />;
   if (error || !lesson)
     return (
@@ -109,6 +125,8 @@ export function LessonViewerPage() {
   const currentIndex = lessons?.findIndex((l) => l.id === lessonId) ?? -1;
   const prevLesson = lessons?.[currentIndex - 1];
   const nextLesson = lessons?.[currentIndex + 1];
+  const courseComplete =
+    progress && progress.totalLessons > 0 && progress.progressPercentage === 100;
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
@@ -241,6 +259,38 @@ export function LessonViewerPage() {
               </Link>
             )}
           </div>
+
+          {/* Certificate banner */}
+          {courseComplete && (
+            <div className="mt-6 rounded-xl bg-gradient-to-r from-yellow-50 to-amber-50 border border-yellow-200 p-5 flex items-center gap-4">
+              <div className="bg-yellow-100 text-yellow-600 rounded-full p-3 shrink-0">
+                <Award className="h-7 w-7" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-semibold text-gray-900">You've completed this course!</p>
+                <p className="text-sm text-gray-600">
+                  Claim your certificate to celebrate your achievement.
+                </p>
+              </div>
+              {certificate ? (
+                <Link
+                  to={`/certificates/${certificate.code}`}
+                  className="btn-secondary text-sm shrink-0 gap-1"
+                >
+                  <Award className="h-4 w-4 text-yellow-500" /> View Certificate
+                </Link>
+              ) : (
+                <button
+                  onClick={() => claimCertificate.mutate()}
+                  disabled={claimCertificate.isPending}
+                  className="btn-primary text-sm shrink-0 gap-1 bg-yellow-500 hover:bg-yellow-600"
+                >
+                  <Award className="h-4 w-4" />
+                  {claimCertificate.isPending ? 'Claiming...' : 'Claim Certificate'}
+                </button>
+              )}
+            </div>
+          )}
 
           {/* Notes */}
           <div className="mt-8">

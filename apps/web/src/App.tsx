@@ -20,6 +20,7 @@ import { StudentDashboard } from '@/pages/student/StudentDashboard';
 import { LessonViewerPage } from '@/pages/student/LessonViewerPage';
 import { QuizAttemptPage } from '@/pages/student/QuizAttemptPage';
 import { QuizResultPage } from '@/pages/student/QuizResultPage';
+import { CertificatePage } from '@/pages/student/CertificatePage';
 
 // Instructor pages
 import { InstructorDashboard } from '@/pages/instructor/InstructorDashboard';
@@ -55,6 +56,7 @@ export default function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/courses" element={<CourseCatalogPage />} />
         <Route path="/courses/:courseId" element={<CourseDetailPage />} />
+        <Route path="/certificates/:code" element={<CertificatePage />} />
 
         <Route
           path="/student/dashboard"
