@@ -1,7 +1,17 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams, Link } from 'react-router-dom';
 import { useState } from 'react';
-import { BookOpen, Clock, Users, CheckCircle, PlayCircle, Lock, Bookmark, Star, Trash2 } from 'lucide-react';
+import {
+  BookOpen,
+  Clock,
+  Users,
+  CheckCircle,
+  PlayCircle,
+  Lock,
+  Bookmark,
+  Star,
+  Trash2,
+} from 'lucide-react';
 import { coursesApi } from '@/api/courses';
 import { enrollmentsApi } from '@/api/enrollments';
 import { bookmarksApi } from '@/api/bookmarks';
@@ -74,7 +84,8 @@ export function CourseDetailPage() {
   });
 
   const submitReview = useMutation({
-    mutationFn: () => reviewsApi.upsert(courseId!, { rating: reviewRating, body: reviewBody || undefined }),
+    mutationFn: () =>
+      reviewsApi.upsert(courseId!, { rating: reviewRating, body: reviewBody || undefined }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['course-reviews', courseId] });
       qc.invalidateQueries({ queryKey: ['my-review', courseId] });
@@ -203,10 +214,16 @@ export function CourseDetailPage() {
                 <div className="flex gap-2">
                   <button
                     onClick={() => submitReview.mutate()}
-                    disabled={submitReview.isPending || (reviewRating || myReview?.rating || 0) === 0}
+                    disabled={
+                      submitReview.isPending || (reviewRating || myReview?.rating || 0) === 0
+                    }
                     className="btn-primary text-sm"
                   >
-                    {submitReview.isPending ? 'Saving...' : myReview ? 'Update Review' : 'Submit Review'}
+                    {submitReview.isPending
+                      ? 'Saving...'
+                      : myReview
+                        ? 'Update Review'
+                        : 'Submit Review'}
                   </button>
                   {myReview && (
                     <button

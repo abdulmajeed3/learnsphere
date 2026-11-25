@@ -19,10 +19,7 @@ describe('ReviewsService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        ReviewsService,
-        { provide: PrismaService, useValue: mockPrisma },
-      ],
+      providers: [ReviewsService, { provide: PrismaService, useValue: mockPrisma }],
     }).compile();
 
     service = module.get<ReviewsService>(ReviewsService);
@@ -32,17 +29,17 @@ describe('ReviewsService', () => {
   describe('upsert', () => {
     it('throws NotFoundException when course not found', async () => {
       mockPrisma.course.findUnique.mockResolvedValue(null);
-      await expect(
-        service.upsert('student-1', 'course-1', { rating: 4 }),
-      ).rejects.toThrow(NotFoundException);
+      await expect(service.upsert('student-1', 'course-1', { rating: 4 })).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
     it('throws ForbiddenException when not enrolled', async () => {
       mockPrisma.course.findUnique.mockResolvedValue({ id: 'course-1' });
       mockPrisma.enrollment.findUnique.mockResolvedValue(null);
-      await expect(
-        service.upsert('student-1', 'course-1', { rating: 4 }),
-      ).rejects.toThrow(ForbiddenException);
+      await expect(service.upsert('student-1', 'course-1', { rating: 4 })).rejects.toThrow(
+        ForbiddenException,
+      );
     });
 
     it('creates or updates review when enrolled', async () => {
