@@ -38,6 +38,8 @@ export interface Course {
   lessons?: Lesson[];
   quizzes?: { id: string; title: string }[];
   _count?: { enrollments: number; lessons?: number };
+  averageRating?: number | null;
+  reviewCount?: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -161,4 +163,15 @@ export interface Certificate {
   courseId: string;
   course: Course & { instructor?: Pick<User, 'id' | 'name'> };
   student?: Pick<User, 'id' | 'name'>;
+}
+
+export interface CourseReview {
+  id: string;
+  rating: number;
+  body?: string;
+  createdAt: string;
+  updatedAt: string;
+  studentId: string;
+  courseId: string;
+  student?: Pick<User, 'id' | 'name' | 'avatarUrl'>;
 }

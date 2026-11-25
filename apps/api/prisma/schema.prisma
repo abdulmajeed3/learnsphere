@@ -46,6 +46,7 @@ model User {
   bookmarks      CourseBookmark[]
   lessonNotes    LessonNote[]
   certificates   Certificate[]
+  reviews        CourseReview[]
 
   @@index([email])
 }
@@ -84,6 +85,7 @@ model Course {
   quizzes      Quiz[]
   bookmarks    CourseBookmark[]
   certificates Certificate[]
+  reviews      CourseReview[]
 
   @@index([status])
   @@index([instructorId])
@@ -273,4 +275,21 @@ model Certificate {
   @@unique([studentId, courseId])
   @@index([studentId])
   @@index([code])
+}
+
+model CourseReview {
+  id        String   @id @default(uuid())
+  rating    Int
+  body      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  studentId String
+  student   User   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  courseId  String
+  course    Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, courseId])
+  @@index([courseId])
+  @@index([studentId])
 }

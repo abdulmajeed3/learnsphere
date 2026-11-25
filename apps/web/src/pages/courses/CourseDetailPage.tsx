@@ -1,11 +1,14 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useParams, Link, useNavigate } from 'react-router-dom';
-import { BookOpen, Clock, Users, CheckCircle, PlayCircle, Lock, Bookmark } from 'lucide-react';
+import { useParams, Link } from 'react-router-dom';
+import { useState } from 'react';
+import { BookOpen, Clock, Users, CheckCircle, PlayCircle, Lock, Bookmark, Star, Trash2 } from 'lucide-react';
 import { coursesApi } from '@/api/courses';
 import { enrollmentsApi } from '@/api/enrollments';
 import { bookmarksApi } from '@/api/bookmarks';
+import { reviewsApi } from '@/api/reviews';
 import { PageSpinner } from '@/components/ui/Spinner';
 import { Alert } from '@/components/ui/Alert';
+import { StarRating } from '@/components/ui/StarRating';
 import { useAuthStore } from '@/stores/authStore';
 
 const diffColors = {
@@ -17,8 +20,9 @@ const diffColors = {
 export function CourseDetailPage() {
   const { courseId } = useParams<{ courseId: string }>();
   const { user, isAuthenticated } = useAuthStore();
-  const navigate = useNavigate();
   const qc = useQueryClient();
+  const [reviewRating, setReviewRating] = useState(0);
+  const [reviewBody, setReviewBody] = useState('');
 
   const {
     data: course,
@@ -54,6 +58,36 @@ export function CourseDetailPage() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['enrollment-check', courseId] });
       qc.invalidateQueries({ queryKey: ['enrollments'] });
+    },
+  });
+
+  const { data: reviewsData } = useQuery({
+    queryKey: ['course-reviews', courseId],
+    queryFn: () => reviewsApi.getByCourse(courseId!),
+    enabled: !!courseId,
+  });
+
+  const { data: myReview } = useQuery({
+    queryKey: ['my-review', courseId],
+    queryFn: () => reviewsApi.getMine(courseId!),
+    enabled: isAuthenticated && user?.role === 'STUDENT' && !!courseId,
+  });
+
+  const submitReview = useMutation({
+    mutationFn: () => reviewsApi.upsert(courseId!, { rating: reviewRating, body: reviewBody || undefined }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['course-reviews', courseId] });
+      qc.invalidateQueries({ queryKey: ['my-review', courseId] });
+      setReviewBody('');
+    },
+  });
+
+  const deleteReview = useMutation({
+    mutationFn: (reviewId: string) => reviewsApi.delete(reviewId),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['course-reviews', courseId] });
+      qc.invalidateQueries({ queryKey: ['my-review', courseId] });
+      setReviewRating(0);
     },
   });
 
@@ -129,6 +163,93 @@ export function CourseDetailPage() {
               </div>
             </div>
           )}
+
+          {/* Reviews */}
+          <div className="mt-8">
+            <div className="flex items-center gap-3 mb-4">
+              <h2 className="text-lg font-semibold text-gray-900">Student Reviews</h2>
+              {reviewsData && reviewsData.reviewCount > 0 && (
+                <div className="flex items-center gap-2">
+                  <StarRating value={reviewsData.averageRating} size="sm" />
+                  <span className="text-sm text-gray-500">
+                    {reviewsData.averageRating} ({reviewsData.reviewCount} reviews)
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* Write / edit review form for enrolled students */}
+            {isAuthenticated && user?.role === 'STUDENT' && enrollment && (
+              <div className="card p-5 mb-6">
+                <h3 className="font-medium text-gray-900 mb-3">
+                  {myReview ? 'Update Your Review' : 'Write a Review'}
+                </h3>
+                <div className="mb-3">
+                  <StarRating
+                    value={reviewRating || myReview?.rating || 0}
+                    interactive
+                    size="lg"
+                    onChange={setReviewRating}
+                  />
+                </div>
+                <textarea
+                  value={reviewBody}
+                  onChange={(e) => setReviewBody(e.target.value)}
+                  placeholder="Share your experience with this course (optional)"
+                  rows={3}
+                  className="input resize-none mb-3"
+                  defaultValue={myReview?.body ?? ''}
+                />
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => submitReview.mutate()}
+                    disabled={submitReview.isPending || (reviewRating || myReview?.rating || 0) === 0}
+                    className="btn-primary text-sm"
+                  >
+                    {submitReview.isPending ? 'Saving...' : myReview ? 'Update Review' : 'Submit Review'}
+                  </button>
+                  {myReview && (
+                    <button
+                      onClick={() => deleteReview.mutate(myReview.id)}
+                      disabled={deleteReview.isPending}
+                      className="btn-ghost text-sm text-red-500 hover:bg-red-50"
+                    >
+                      <Trash2 className="h-4 w-4" /> Delete
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Reviews list */}
+            {reviewsData && reviewsData.reviews.length > 0 ? (
+              <div className="space-y-4">
+                {reviewsData.reviews.map((r) => (
+                  <div key={r.id} className="card p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        <div className="h-9 w-9 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center font-semibold text-sm shrink-0">
+                          {r.student?.name?.charAt(0).toUpperCase() ?? '?'}
+                        </div>
+                        <div>
+                          <p className="font-medium text-gray-900 text-sm">{r.student?.name}</p>
+                          <StarRating value={r.rating} size="sm" />
+                        </div>
+                      </div>
+                      <span className="text-xs text-gray-400 shrink-0">
+                        {new Date(r.createdAt).toLocaleDateString()}
+                      </span>
+                    </div>
+                    {r.body && <p className="mt-3 text-sm text-gray-700">{r.body}</p>}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-gray-400 text-center py-6">
+                No reviews yet. Be the first to review this course!
+              </p>
+            )}
+          </div>
         </div>
 
         {/* Sidebar */}
@@ -151,6 +272,12 @@ export function CourseDetailPage() {
               <div className="flex items-center gap-2">
                 <Users className="h-4 w-4" /> {course._count?.enrollments ?? 0} students
               </div>
+              {course.averageRating != null && (
+                <div className="flex items-center gap-2">
+                  <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
+                  {course.averageRating} ({course.reviewCount} reviews)
+                </div>
+              )}
             </div>
 
             {isInstructor ? (

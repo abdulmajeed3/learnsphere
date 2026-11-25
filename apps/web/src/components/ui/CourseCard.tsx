@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { BookOpen, Users, Bookmark } from 'lucide-react';
 import type { Course } from '@/types';
 import { ProgressBar } from './ProgressBar';
+import { StarRating } from './StarRating';
 
 const difficultyColors = {
   BEGINNER: 'badge-green',
@@ -70,6 +71,14 @@ export function CourseCard({
             {course._count?.enrollments ?? 0}
           </span>
         </div>
+        {course.averageRating != null && (
+          <div className="mt-1.5 flex items-center gap-1.5">
+            <StarRating value={course.averageRating} size="sm" />
+            <span className="text-xs text-gray-500">
+              {course.averageRating} ({course.reviewCount})
+            </span>
+          </div>
+        )}
         {course.instructor && (
           <p className="mt-2 text-xs text-gray-500">by {course.instructor.name}</p>
         )}

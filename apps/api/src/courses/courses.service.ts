@@ -37,14 +37,24 @@ export class CoursesService {
           instructor: { select: { id: true, name: true, avatarUrl: true } },
           category: { select: { id: true, name: true, slug: true } },
           _count: { select: { lessons: true, enrollments: true } },
+          reviews: { select: { rating: true } },
         },
         orderBy: { createdAt: 'desc' },
       }),
       this.prisma.course.count({ where }),
     ]);
 
+    const data = courses.map((c) => {
+      const { reviews, ...rest } = c;
+      const averageRating =
+        reviews.length > 0
+          ? Math.round((reviews.reduce((s, r) => s + r.rating, 0) / reviews.length) * 10) / 10
+          : null;
+      return { ...rest, averageRating, reviewCount: reviews.length };
+    });
+
     return {
-      data: courses,
+      data,
       meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
     };
   }
@@ -61,13 +71,19 @@ export class CoursesService {
         },
         quizzes: { select: { id: true, title: true } },
         _count: { select: { enrollments: true } },
+        reviews: { select: { rating: true } },
       },
     });
     if (!course) throw new NotFoundException('Course not found');
     if (course.status === CourseStatus.DRAFT && course.instructorId !== userId) {
       throw new NotFoundException('Course not found');
     }
-    return course;
+    const { reviews, ...rest } = course;
+    const averageRating =
+      reviews.length > 0
+        ? Math.round((reviews.reduce((s, r) => s + r.rating, 0) / reviews.length) * 10) / 10
+        : null;
+    return { ...rest, averageRating, reviewCount: reviews.length };
   }
 
   async findBySlug(slug: string, userId?: string) {
@@ -82,13 +98,19 @@ export class CoursesService {
         },
         quizzes: { select: { id: true, title: true } },
         _count: { select: { enrollments: true } },
+        reviews: { select: { rating: true } },
       },
     });
     if (!course) throw new NotFoundException('Course not found');
     if (course.status === CourseStatus.DRAFT && course.instructorId !== userId) {
       throw new NotFoundException('Course not found');
     }
-    return course;
+    const { reviews, ...rest } = course;
+    const averageRating =
+      reviews.length > 0
+        ? Math.round((reviews.reduce((s, r) => s + r.rating, 0) / reviews.length) * 10) / 10
+        : null;
+    return { ...rest, averageRating, reviewCount: reviews.length };
   }
 
   async create(instructorId: string, dto: CreateCourseDto) {
